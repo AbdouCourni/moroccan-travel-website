@@ -7,6 +7,7 @@ import { LanguageProvider } from '../../contexts/LanguageContext';
 import Script from 'next/script';
 import Header from '../../components/Header'; // Import Header
 import Footer from '../../components/Footer';
+import { GoogleAnalyticsWrapper } from '../../components/GoogleAnalytics';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -59,6 +60,7 @@ export default async function RootLayout({
         <LanguageProvider initialLanguage={language}>
           <Header />
           <main>{children}</main>
+          <GoogleAnalyticsWrapper />
           <Footer/>
         </LanguageProvider>
       </body>
