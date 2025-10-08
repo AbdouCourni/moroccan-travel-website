@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 import { Accommodation } from '../../../types';
+import Image from 'next/image';
 
 export default function StaysPage() {
   const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
@@ -57,9 +58,9 @@ export default function StaysPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-              <select 
+              <select
                 value={filters.city}
-                onChange={(e) => setFilters({...filters, city: e.target.value})}
+                onChange={(e) => setFilters({ ...filters, city: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               >
                 <option value="">All Cities</option>
@@ -72,9 +73,9 @@ export default function StaysPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
-              <select 
+              <select
                 value={filters.type}
-                onChange={(e) => setFilters({...filters, type: e.target.value})}
+                onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               >
                 <option value="">All Types</option>
@@ -89,22 +90,22 @@ export default function StaysPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Price: ${filters.priceRange[0]} - ${filters.priceRange[1]}
               </label>
-              <input 
-                type="range" 
-                min="0" 
-                max="500" 
+              <input
+                type="range"
+                min="0"
+                max="500"
                 value={filters.priceRange[1]}
-                onChange={(e) => setFilters({...filters, priceRange: [filters.priceRange[0], parseInt(e.target.value)]})}
+                onChange={(e) => setFilters({ ...filters, priceRange: [filters.priceRange[0], parseInt(e.target.value)] })}
                 className="w-full"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
-              <select 
+              <select
                 multiple
                 value={filters.amenities}
-                onChange={(e) => setFilters({...filters, amenities: Array.from(e.target.selectedOptions, option => option.value)})}
+                onChange={(e) => setFilters({ ...filters, amenities: Array.from(e.target.selectedOptions, option => option.value) })}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               >
                 <option value="wifi">WiFi</option>
@@ -120,20 +121,23 @@ export default function StaysPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {accommodations.map((accommodation) => (
             <div key={accommodation.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-              <img 
-                src={accommodation.images[0] || '/images/default-accommodation.jpg'} 
-                alt={accommodation.name}
+            
+              <Image
+                src={accommodation.images[0] || '/images/default-accommodation.jpg'}
+                alt={accommodation.name.en}
+                width={400}
+                height={192}
                 className="w-full h-48 object-cover"
               />
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-amiri text-xl font-bold">{accommodation.name}</h3>
+                  <h3 className="font-amiri text-xl font-bold">{accommodation.name.en}</h3>
                   <span className="bg-primary-gold text-white px-2 py-1 rounded text-sm">
                     ${accommodation.price.nightly}/night
                   </span>
                 </div>
                 <p className="text-gray-600 mb-3">{accommodation.city} • {accommodation.type}</p>
-                
+
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
                     <span className="text-yellow-500">★</span>

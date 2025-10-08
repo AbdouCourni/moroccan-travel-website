@@ -5,13 +5,13 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../src/logo.png';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation'; // Remove useSearchParams
 import { auth } from '../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import UserMenu from './Auth/UserMenu';
 import LoginForm from './Auth/LoginForm';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { useLanguage, type Language } from '../contexts/LanguageContext'; // Use hook and type
+import { useLanguage, type Language } from '../contexts/LanguageContext';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,8 +22,7 @@ export default function Header() {
   const { language, setLanguage, t } = useLanguage();
   
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const router = useRouter(); // Keep router for potential future use
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -43,10 +42,8 @@ export default function Header() {
     // Update context (this will handle localStorage, cookies, and document attributes)
     setLanguage(newLanguage);
     
-    // Update URL for server-side detection
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('lang', newLanguage);
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    // Remove URL parameter update to fix the build error
+    // The language context alone is sufficient for client-side language switching
   };
 
   const navItems = [
