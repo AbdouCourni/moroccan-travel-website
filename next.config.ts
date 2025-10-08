@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     domains: ['images.unsplash.com', 'your-other-domains.com'],
   },
   // Add this for better production builds
-  // output: 'standalone',
+  output: 'standalone',
    typescript: {
     ignoreBuildErrors: true,
   },
@@ -14,8 +14,8 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
    // Add this to bypass the error temporarily
-  output: 'export',
-  trailingSlash: true,
+  // output: 'export',
+  // trailingSlash: true,
   /* config options here */
 };
 
