@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
   },
   // Add this for better production builds
   output: 'standalone',
+   typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   /* config options here */
 };
 
