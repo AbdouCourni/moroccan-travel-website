@@ -3,6 +3,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary-gold: #D9A441;
+  --moroccan-blue: #2E86AB;
+  --moroccan-red: #C1272D;
+  --desert-sand: #F8F5F0;
+  --dark-charcoal: #2D2D2D;
 }
 
 @theme inline {
@@ -10,6 +15,9 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary-gold);
+  --color-secondary: var(--moroccan-blue);
+  --color-accent: var(--moroccan-red);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +31,212 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom component classes */
+.btn-primary {
+  background: var(--primary-gold);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #b8860f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 164, 65, 0.3);
+}
+
+.btn-secondary {
+  background: var(--moroccan-blue);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #1e6a8e;
+  transform: translateY(-2px);
+}
+
+/* Modern card styles */
+.destination-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.destination-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Hero section */
+.hero-section {
+  background: linear-gradient(135deg, var(--moroccan-blue) 0%, var(--primary-gold) 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('https://images.unsplash.com/photo-1549923297-504c55940e0b?w=1200') center/cover;
+  opacity: 0.2;
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Add to existing globals.css */
+
+/* Zoom animation for background */
+@keyframes zoomIn {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+.animate-zoom-in {
+  animation: zoomIn 20s ease-in-out infinite alternate;
+}
+
+/* Smooth transitions for active states */
+.nav-link {
+  transition: all 0.3s ease;
+}
+
+.nav-link.active {
+  transform: translateY(-1px);
+}
+
+/* Video container styles */
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.video-container video {
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Enhanced button styles */
+.btn-primary, .btn-secondary {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.btn-primary::before, .btn-secondary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before, .btn-secondary:hover::before {
+  left: 100%;
+}
+/* Add these styles to your existing globals.css */
+
+/* Enhanced active state for navigation */
+.nav-active {
+  position: relative;
+}
+
+.nav-active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: var(--primary-gold);
+  border-radius: 50%;
+}
+
+/* Smooth page transitions */
+.page-transition {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure header stays on top */
+header {
+  z-index: 1000;
+  /* 1. 50% Transparency (Opacity is 0.5) */
+  background-color: rgba(255, 255, 255, 0.5); 
+  
+  /* 2. Blur Effect (Adjust the pixel value for more/less blur) */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+}
+
+/* Mobile menu improvements */
+@media (max-width: 768px) {
+  .mobile-menu-enter {
+    transform: translateY(-100%);
+  }
+  
+  .mobile-menu-enter-active {
+    transform: translateY(0);
+    transition: transform 0.3s ease-out;
+  }
 }
