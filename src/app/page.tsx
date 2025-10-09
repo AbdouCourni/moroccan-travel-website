@@ -39,7 +39,7 @@ export default async function HomePage() {
       <section id="featured" className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="font-amiri text-4xl font-bold text-dark-charcoal">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
               {t.title}
             </h2>
             <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">
