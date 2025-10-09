@@ -92,7 +92,7 @@ export default function Header() {
                     href={item.href}
                     className={`transition-all duration-300 font-medium px-3 lg:px-4 py-2 rounded-lg ${
                       active
-                        ? 'text-primary-gold bg-amber-50 font-semibold shadow-sm border border-amber-200'
+                        ? 'text-gray-900 bg-amber-50 font-semibold shadow-sm border border-amber-200'
                         : 'text-gray-700 hover:text-primary-gold hover:bg-gray-50'
                     }`}
                   >

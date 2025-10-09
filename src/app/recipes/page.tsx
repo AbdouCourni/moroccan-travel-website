@@ -82,7 +82,7 @@ export default function RecipesPage() {
             <div className="container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <h1 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
+                    <h1 className="font-amiri text-4xl font-bold text-gray-900 mb-4">
                         Moroccan Recipes
                     </h1>
                     <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-6">

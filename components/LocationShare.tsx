@@ -75,7 +75,7 @@ export function LocationShare({ coordinates, address, placeName }: LocationShare
       {/* Copy Coordinates */}
       <button
         onClick={copyCoordinates}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 border-gray-700 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors"
       >
         {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
         {copied ? 'Copied!' : 'Coords'}
@@ -85,7 +85,7 @@ export function LocationShare({ coordinates, address, placeName }: LocationShare
       {address && (
         <button
           onClick={copyAddress}
-          className="flex items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors"
+          className="flex items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 border-gray-700 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors"
         >
           <MapPin className="w-4 h-4" />
           Address
@@ -95,7 +95,7 @@ export function LocationShare({ coordinates, address, placeName }: LocationShare
       {/* Share Location */}
       <button
         onClick={shareLocation}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 border-gray-700 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors"
       >
         <Share2 className="w-4 h-4" />
         Share
@@ -104,7 +104,7 @@ export function LocationShare({ coordinates, address, placeName }: LocationShare
       {/* Open in Google Maps */}
       <button
         onClick={openInGoogleMaps}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm bg-white border border-gray-300 border-gray-700 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors"
       >
         <ExternalLink className="w-4 h-4" />
         Google Maps

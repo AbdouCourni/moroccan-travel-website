@@ -23,7 +23,7 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
   const displayName = destination.name[language] || destination.name.en;
   const displayDescription = destination.description[language] || destination.description.en;
 
-  console.log(destination.name[language]+'_____'+destination.image);
+  //console.log(destination.name[language]+'_____'+destination.image);
   return (
     <Link href={`/destinations/${destination.slug}`}>
       <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer group">
@@ -36,14 +36,14 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
           <div/>
         </div>
         <div className="p-4">
-          <h3 className="font-amiri text-xl font-bold text-dark-charcoal group-hover:text-primary-gold transition-colors">
+          <h3 className="text-3xl font-bold text-gray-900 mb-4 leading-tight">
             {displayName}
           </h3>
           <p className="text-gray-600 mt-2 line-clamp-2">
             {displayDescription}
           </p>
           <div className="mt-3">
-            <span className="text-sm text-moroccan-blue font-semibold">
+            <span className="text-sm text-gray-900 font-semibold">
               {destination.region}
             </span>
           </div>
@@ -51,7 +51,7 @@ export default function DestinationCard({ destination }: DestinationCardProps) {
             {destination.highlights.slice(0, 3).map((highlight, index) => (
               <span 
                 key={index}
-                className="text-xs bg-desert-sand text-dark-charcoal px-2 py-1 rounded"
+                className="text-xs bg-desert-sand text-gray-900 px-2 py-1 rounded"
               >
                 {highlight}
               </span>

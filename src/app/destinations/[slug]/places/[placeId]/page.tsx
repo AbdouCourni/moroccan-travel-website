@@ -114,7 +114,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
               {convertedPlace.rating && (
                 <div className="flex items-center gap-2">
                   <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                  <span className="font-semibold">{convertedPlace.rating.toFixed(1)}</span>
+                  <span className="font-semibold text-gray-800">{convertedPlace.rating.toFixed(1)}</span>
                   <span className="text-gray-600">({convertedPlace.reviewCount} reviews)</span>
                 </div>
               )}
@@ -128,7 +128,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
 
               {convertedPlace.entranceFee && (
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-primary-gold">
+                  <span className="font-semibold text-gray-800">
                     {convertedPlace.entranceFee.tourist || convertedPlace.entranceFee.local} {convertedPlace.entranceFee.currency}
                   </span>
                   <span className="text-gray-600">entrance fee</span>
@@ -137,11 +137,11 @@ export default async function PlacePage({ params }: PlacePageProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-primary-gold text-gray-700 hover:text-primary-gold transition-colors">
                 <Heart className="w-4 h-4" />
                 Save
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors">
                 <Share2 className="w-4 h-4" />
                 Share
               </button>
@@ -158,14 +158,14 @@ export default async function PlacePage({ params }: PlacePageProps) {
             <div className="lg:col-span-2">
               {/* Description */}
               <div className="mb-8">
-                <h2 className="font-amiri text-3xl font-bold text-dark-charcoal mb-4">About</h2>
+                <h2 className="font-amiri text-3xl font-bold text-gray-900 mb-4">About</h2>
                 <p className="text-gray-700 text-lg leading-relaxed">{displayDescription}</p>
               </div>
 
               {/* Image Gallery */}
               {convertedPlace.images && convertedPlace.images.length > 1 && (
                 <div className="mb-8">
-                  <h3 className="font-amiri text-2xl font-bold text-dark-charcoal mb-4">Gallery</h3>
+                  <h3 className="font-amiri text-2xl font-bold text-gray-900 mb-4">Gallery</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {convertedPlace.images.slice(1).map((image: string, index: number) => (
                       <img
@@ -182,7 +182,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
               {/* Tips */}
               {convertedPlace.tips && convertedPlace.tips.length > 0 && (
                 <div className="mb-8">
-                  <h3 className="font-amiri text-2xl font-bold text-dark-charcoal mb-4">Visitor Tips</h3>
+                  <h3 className="font-amiri text-2xl font-bold text-gray-900 mb-4">Visitor Tips</h3>
                   <ul className="space-y-2">
                     {convertedPlace.tips.map((tip: string, index: number) => (
                       <li key={index} className="flex items-start gap-3 text-gray-700">
@@ -197,7 +197,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
               {/* Accessibility */}
               {convertedPlace.accessibility && convertedPlace.accessibility.length > 0 && (
                 <div className="mb-8">
-                  <h3 className="font-amiri text-2xl font-bold text-dark-charcoal mb-4">Accessibility</h3>
+                  <h3 className="font-amiri text-2xl font-bold text-gray-900 mb-4">Accessibility</h3>
                   <div className="flex flex-wrap gap-2">
                     {convertedPlace.accessibility.map((feature: string, index: number) => (
                       <span
@@ -217,7 +217,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
               {/* Best Time to Visit */}
               {convertedPlace.bestTimeToVisit && convertedPlace.bestTimeToVisit.length > 0 && (
                 <div className="bg-gray-50 rounded-2xl p-6">
-                  <h3 className="font-amiri text-xl font-bold text-dark-charcoal mb-3 flex items-center gap-2">
+                  <h3 className="font-amiri text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <Calendar className="w-5 h-5" />
                     Best Time to Visit
                   </h3>
@@ -234,7 +234,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
               {/* Opening Hours */}
               {convertedPlace.openingHours && (
                 <div className="bg-gray-50 rounded-2xl p-6">
-                  <h3 className="font-amiri text-xl font-bold text-dark-charcoal mb-3">
+                  <h3 className="font-amiri text-xl font-bold text-gray-900 mb-3">
                     Opening Hours
                   </h3>
                   <div className="space-y-2">
@@ -251,7 +251,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
               {/* Contact Information */}
               {convertedPlace.contact && (
                 <div className="bg-gray-50 rounded-2xl p-6">
-                  <h3 className="font-amiri text-xl font-bold text-dark-charcoal mb-3">
+                  <h3 className="font-amiri text-xl font-bold text-gray-900 mb-3">
                     Contact Information
                   </h3>
                   <div className="space-y-3">
@@ -282,7 +282,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
 
               <div className="bg-gray-50 rounded-2xl p-6">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3">
-                  <h3 className="font-amiri text-xl font-bold text-dark-charcoal">
+                  <h3 className="font-amiri text-xl font-bold text-gray-900">
                     Location
                   </h3>
 

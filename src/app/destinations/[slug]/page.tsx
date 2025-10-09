@@ -326,7 +326,7 @@ export default async function DestinationPage({
   <section id="places" className="py-16 bg-gray-50">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-12">
-        <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
+        <h2 className="font-amiri text-4xl font-bold text-gray-900 mb-4">
           {t('mustVisitIn')} {displayName}
         </h2>
         <p className="text-xl text-gray-600 max-w-2xl">

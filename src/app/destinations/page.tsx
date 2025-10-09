@@ -53,7 +53,7 @@ export default async function DestinationsPage() {
         <section className="py-16 px-4 max-w-7xl mx-auto text-center">
           <div className="bg-gray-50 rounded-2xl p-12">
             <div className="text-6xl mb-4">🏜️</div>
-            <h2 className="font-amiri text-2xl font-bold text-dark-charcoal mb-4">
+            <h2 className="font-amiri text-2xl font-bold text-gray-900 mb-4">
               No Destinations Found
             </h2>
             <p className="text-gray-600 mb-6">
@@ -123,22 +123,22 @@ export default async function DestinationsPage() {
                       </span>
                     </div>
 
-                    {/* Popularity Badge */}
+                    {/* Popularity Badge
                     {destination.popularity && (
                       <div className="absolute top-4 right-4">
-                        <span className="bg-white/90 text-dark-charcoal px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                        <span className="bg-white/90 text-gray-900 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                           <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                           {destination.popularity > 4 ? 'Popular' : 'Trending'}
                         </span>
                       </div>
-                    )}
+                    )} */}
                   </div>
 
                   {/* Content */}
                   <div className="p-6 flex-1 flex flex-col">
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-amiri text-xl font-bold text-dark-charcoal line-clamp-1">
+                        <h3 className="font-amiri text-xl font-bold text-gray-900 line-clamp-1">
                           {displayName}
                         </h3>
                       </div>
@@ -212,7 +212,7 @@ export default async function DestinationsPage() {
       {/* Regions Overview */}
       <section className="bg-white py-16 border-t">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="font-amiri text-3xl font-bold text-dark-charcoal mb-4">
+          <h2 className="font-amiri text-3xl font-bold text-gray-900 mb-4">
             Explore by Region
           </h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -225,7 +225,7 @@ export default async function DestinationsPage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-primary-gold to-moroccan-blue rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto mb-3">
                   {region.charAt(0)}
                 </div>
-                <h3 className="font-semibold text-dark-charcoal">{region}</h3>
+                <h3 className="font-semibold text-gray-900">{region}</h3>
                 <p className="text-sm text-gray-500 mt-1">
                   {destinations.filter(d => d.region === region).length} destinations
                 </p>

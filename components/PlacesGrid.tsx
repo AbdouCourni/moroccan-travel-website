@@ -291,7 +291,7 @@ export function PlacesGrid({ places, slug, columns = 3 }: PlacesGridProps) {
           <div className="p-5">
             {/* Title and Location */}
             <div className="mb-3">
-              <h3 className="font-amiri text-xl font-bold text-dark-charcoal mb-2 line-clamp-1">
+              <h3 className="font-amiri text-xl font-bold text-gray-900 mb-2 line-clamp-1">
                 {getLocalizedText(place.name)}
               </h3>
               {place.location?.address && (
@@ -345,7 +345,7 @@ export function PlacesGrid({ places, slug, columns = 3 }: PlacesGridProps) {
                 <span className="text-xs text-gray-500">
                   {t('bestTime') || 'Best time'}: 
                 </span>
-                <span className="text-xs text-primary-gold font-medium ml-1">
+                <span className="text-xs text-gray-800 font-medium ml-1">
                   {place.bestTimeToVisit.join(', ')}
                 </span>
               </div>
