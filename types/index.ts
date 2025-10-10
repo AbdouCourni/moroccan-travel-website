@@ -10,6 +10,7 @@ export interface User {
     currency: 'USD' | 'EUR' | 'MAD';
   };
   createdAt: Date;
+  updatedAt: Date;
   phone?: string;
   emailVerified: boolean;
   dateOfBirth?: Date;

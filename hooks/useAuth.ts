@@ -1,3 +1,4 @@
+// hooks/useAuth.ts
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,6 +11,7 @@ export function useAuth() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed:', user ? user.uid : 'No user');
       setUser(user);
       setLoading(false);
     });

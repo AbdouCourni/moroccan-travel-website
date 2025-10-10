@@ -41,7 +41,7 @@ export default function UserMenu({ user, mobile = false }: UserMenuProps) {
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100"
         >
-          <div className="w-8 h-8 bg-primary-gold rounded-full flex items-center justify-center text-white font-semibold">
+          <div className="w-8 h-8 bg-primary-gold rounded-full flex items-center justify-center text-black font-semibold">
             {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
           </div>
         </button>
@@ -82,9 +82,9 @@ export default function UserMenu({ user, mobile = false }: UserMenuProps) {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        className="flex items-center border-1 border-gray-300 rounded-full space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
       >
-        <div className="w-8 h-8 bg-primary-gold rounded-full flex items-center justify-center text-white font-semibold">
+        <div className="w-8 h-8 bg-primary-gold rounded-full flex items-center justify-center text-yellow-500 font-semibold">
           {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
         </div>
         <span className="hidden sm:block text-gray-700">

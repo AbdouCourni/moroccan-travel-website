@@ -8,6 +8,8 @@ import Script from 'next/script';
 import Header from '../../components/Header'; // Import Header
 import Footer from '../../components/Footer';
 import { GoogleAnalyticsWrapper } from '../../components/GoogleAnalytics';
+import { AuthProvider } from '../../contexts/AuthContext';
+
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,28 +19,28 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/favicon.ico',
+        url: '../../../public/favicon.ico',
         sizes: '32x32',
       },
       {
-        url: '/favicon-16x16.png',
+        url: '../../../public/favicon-16x16.png',
         sizes: '16x16',
         type: 'image/png',
       },
       {
-        url: '/favicon-32x32.png',
+        url: '../../../public/favicon-32x32.png',
         sizes: '32x32', 
         type: 'image/png',
       },
     ],
     apple: [
       {
-        url: '/apple-touch-icon.png',
+        url: '../../../public/apple-touch-icon.png',
         sizes: '180x180',
         type: 'image/png',
       },
     ],
-    shortcut: ['/favicon.ico'],
+    shortcut: ['../../../public/favicon.ico'],
   },
 };
 
@@ -58,14 +60,14 @@ export default async function RootLayout({
           strategy="beforeInteractive"
         />
         
-        <LanguageProvider initialLanguage={language}>
-          <Header />
-          <main>{children}
-             <GoogleAnalyticsWrapper />
-          </main>
-          
-          <Footer/>
-        </LanguageProvider>
+         <LanguageProvider initialLanguage={language}>
+          <AuthProvider> {/* Wrap with AuthProvider */}
+            <Header />
+            <main>{children}</main>
+            <GoogleAnalyticsWrapper />
+            <Footer/>
+          </AuthProvider>
+        </LanguageProvider>   
       </body>
     </html>
   );
