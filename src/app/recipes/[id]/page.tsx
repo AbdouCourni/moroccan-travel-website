@@ -107,33 +107,49 @@ export default function RecipeDetailPage() {
     };
 
     return (
-        <div className="min-h-screen pt-16 bg-white">
+        <div className=" min-h-screen pt-16 bg-white">
             {/* Hero Section with Image */}
-            <div className="relative h-96 md:h-[500px] bg-gray-200">
-                <Image
-                    src={recipe.image}
-                    alt={recipe.title.en}
-                    fill
-                    className="object-cover"
-                    priority
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                    <div className="container mx-auto">
-                        <button
-                            onClick={() => router.push('/recipes')}
-                            className="inline-flex items-center text-white hover:text-gray-200 mb-4 transition-colors"
-                        >
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                            Back to Recipes
-                        </button>
-                        <h1 className="font-amiri text-4xl md:text-6xl font-bold mb-4">{recipe.title.en}</h1>
-                        <p className="text-xl opacity-90 max-w-2xl">{recipe.description.en}</p>
-                    </div>
-                </div>
-            </div>
+          <div className="min-h-screen bg-white">
+  {/* Hero Section */}
+  <div className="relative h-auto md:h-[500px] bg-gradient-to-br from-orange-400 to-yellow-500 flex flex-col md:flex-row items-center justify-between p-8 md:p-16">
+    
+    {/* Back Button */}
+    <button
+      onClick={() => router.push('/recipes')}
+      className="absolute top-6 left-6 inline-flex items-center text-white hover:text-gray-200 transition-colors bg-black/40 rounded-lg px-4 py-2 hover:bg-black/60 border border-white/30"
+    >
+      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Recipes
+    </button>
+
+    {/* Left Text Section */}
+    <div className="flex-1 text-white z-10">
+      <h1 className="font-amiri text-5xl md:text-6xl font-bold mb-4 drop-shadow-2xl">
+        {recipe.title.en}
+      </h1>
+      <p className="text-xl md:text-2xl max-w-lg drop-shadow-lg leading-relaxed">
+        {recipe.description.en}
+      </p>
+    </div>
+
+    {/* Right Image Section */}
+    {recipe.image && (
+      <div className="flex-1 flex justify-center md:justify-end mt-8 md:mt-0">
+        <img
+          src={recipe.image}
+          alt={recipe.title.en}
+          className="w-full md:w-[400px] lg:w-[500px] h-auto object-cover rounded-2xl shadow-xl border-4 border-white/30"
+          onError={(e) => {
+            console.error('Image failed to load');
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+      </div>
+    )}
+  </div>
+</div>
 
             {/* Recipe Content */}
             <div className="container mx-auto px-4 py-8">
@@ -184,7 +200,7 @@ export default function RecipeDetailPage() {
                                     </div>
                                     <div className="font-semibold text-gray-800">Difficulty</div>
                                     <div className={`font-bold ${recipe.difficulty === 'Easy' ? 'text-green-600' :
-                                            recipe.difficulty === 'Medium' ? 'text-yellow-600' : 'text-red-600'
+                                        recipe.difficulty === 'Medium' ? 'text-yellow-600' : 'text-red-600'
                                         }`}>
                                         {recipe.difficulty}
                                     </div>
@@ -227,8 +243,8 @@ export default function RecipeDetailPage() {
                                 <button
                                     onClick={() => setActiveTab('ingredients')}
                                     className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'ingredients'
-                                            ? 'border-primary-gold text-primary-gold'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        ? 'border-primary-gold text-primary-gold'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
                                     Ingredients
@@ -236,8 +252,8 @@ export default function RecipeDetailPage() {
                                 <button
                                     onClick={() => setActiveTab('instructions')}
                                     className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'instructions'
-                                            ? 'border-primary-gold text-primary-gold'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        ? 'border-primary-gold text-primary-gold'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
                                     Instructions
@@ -346,7 +362,7 @@ export default function RecipeDetailPage() {
                     <div className="text-center">
                         <button
                             onClick={() => router.push('/recipes')}
-                            className="bg-moroccan-blue text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                            className="bg-yellow-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
                         >
                             Explore All Recipes
                         </button>

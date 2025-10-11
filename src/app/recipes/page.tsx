@@ -1,12 +1,11 @@
 // app/recipes/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Recipe } from '../../../types';
-import Image from 'next/image';
 
-// Firestore service (you'll need to set this up based on your Firebase config)
+// Firestore service
 import { getRecipes, getRecipesByCategory } from '../../../lib/firebase-server';
 
 export default function RecipesPage() {
@@ -135,8 +134,8 @@ export default function RecipesPage() {
                     </div>
                 </div>
 
-                {/* Recipes Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+                {/* Pinterest Style Masonry Grid */}
+                <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 mb-12">
                     {filteredRecipes.map((recipe) => (
                         <RecipeCard key={recipe.id} recipe={recipe} />
                     ))}
@@ -171,43 +170,81 @@ export default function RecipesPage() {
 // Recipe Card Component
 function RecipeCard({ recipe }: { recipe: Recipe }) {
     const [isHovered, setIsHovered] = useState(false);
+    const [imageError, setImageError] = useState(false);
+
+    // Calculate approximate content height for better masonry flow
+    const getContentHeight = () => {
+        let height = 200; // Base height for image
+        
+        // Add height based on content length
+        if (recipe.title.en.length > 30) height += 20;
+        if (recipe.description.en.length > 100) height += 40;
+        if (recipe.restrictions.vegetarian || recipe.restrictions.vegan || recipe.restrictions.glutenFree) height += 30;
+        
+        return height;
+    };
 
     return (
         <div
-            className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
+            className="break-inside-avoid mb-6 bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            style={{ minHeight: `${getContentHeight()}px` }}
         >
+            {/* Image Section */}
             <div className="relative overflow-hidden">
-                <Image
-                    src={recipe.image}
-                    alt={recipe.title.en}
-                    width={400}
-                    height={192}
-                    className={`w-full h-48 object-cover transition-transform duration-300 ${isHovered ? 'scale-110' : 'scale-100'
+                {imageError ? (
+                    <div className="w-full h-48 bg-gradient-to-br from-primary-gold/20 to-moroccan-blue/20 flex items-center justify-center">
+                        <div className="text-center">
+                            <div className="text-4xl mb-2">🍽️</div>
+                            <p className="text-gray-500 text-sm">Recipe Image</p>
+                        </div>
+                    </div>
+                ) : (
+                    <img
+                        src={recipe.image}
+                        alt={recipe.title.en}
+                        className={`w-full h-48 object-cover transition-transform duration-500 ${
+                            isHovered ? 'scale-105' : 'scale-100'
                         }`}
-                />
+                        onError={() => setImageError(true)}
+                        loading="lazy"
+                    />
+                )}
+                
+                {/* Difficulty Badge */}
                 <div className="absolute top-3 left-3">
-                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${recipe.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                            recipe.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-red-100 text-red-800'
-                        }`}>
+                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
+                        recipe.difficulty === 'Easy' ? 'bg-green-100 text-green-800 border border-green-200' :
+                        recipe.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
+                        'bg-red-100 text-red-800 border border-red-200'
+                    }`}>
                         {recipe.difficulty}
                     </span>
                 </div>
+                
+                {/* Category Badge */}
                 <div className="absolute top-3 right-3">
-                    <span className="bg-moroccan-blue text-white px-2 py-1 rounded-full text-xs font-semibold">
+                    <span className="bg-moroccan-blue/90 text-white px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
                         {recipe.category}
                     </span>
                 </div>
+                
+                {/* Hover Overlay */}
+                <div className={`absolute inset-0 bg-black/20 transition-opacity duration-300 ${
+                    isHovered ? 'opacity-100' : 'opacity-0'
+                }`} />
             </div>
 
+            {/* Content Section */}
             <div className="p-4">
-                <h3 className="font-amiri text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+                {/* Title */}
+                <h3 className="font-amiri text-lg font-bold text-gray-800 mb-2 leading-tight">
                     {recipe.title.en}
                 </h3>
 
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                {/* Description */}
+                <p className="text-gray-600 text-sm mb-3 leading-relaxed line-clamp-3">
                     {recipe.description.en}
                 </p>
 
@@ -228,22 +265,31 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
                 </div>
 
                 {/* Dietary Tags */}
-                <div className="flex flex-wrap gap-1 mb-3">
+                <div className="flex flex-wrap gap-1 mb-4">
                     {recipe.restrictions.vegetarian && (
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Vegetarian</span>
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs border border-green-200">Vegetarian</span>
                     )}
                     {recipe.restrictions.vegan && (
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Vegan</span>
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs border border-green-200">Vegan</span>
                     )}
                     {recipe.restrictions.glutenFree && (
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Gluten-Free</span>
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs border border-blue-200">Gluten-Free</span>
                     )}
+                    {recipe.tags.slice(0, 2).map((tag, index) => (
+                        <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs border border-gray-200">
+                            {tag}
+                        </span>
+                    ))}
                 </div>
 
                 {/* View Recipe Button */}
                 <Link
                     href={`/recipes/${recipe.id}`}
-                    className="block w-full bg-primary-gold text-white text-center py-2 rounded-lg hover:bg-yellow-600 transition-colors duration-300 font-semibold text-sm"
+                    className={`block w-full text-center py-2 rounded-lg transition-all duration-300 font-semibold text-sm border-2 ${
+                        isHovered 
+                            ? 'bg-yellow-500 text-white border-primary-gold' 
+                            : 'bg-white text-primary-gold border-primary-gold hover:bg-primary-gold hover:text-white'
+                    }`}
                 >
                     View Recipe
                 </Link>
