@@ -5,14 +5,10 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['images.unsplash.com', 'morocompase.com','i.pinimg.com','i.imgur.com'],
   },
-   remotePatterns: [
+ remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**', // Allows all HTTPS domains
-      },
-      {
-        protocol: 'http',
-        hostname: '**', // Allows all HTTP domains (for local development)
+        hostname: '**', // This should work now, but domains is preferred
       },
     ],
   
@@ -23,6 +19,9 @@ const nextConfig: NextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
+  },
+   experimental: {
+    serverComponentsExternalPackages: ['firebase-admin'],
   },
    // Add this to bypass the error temporarily
   // output: 'export',

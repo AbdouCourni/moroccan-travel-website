@@ -5,6 +5,11 @@ import { selectTopDestinations } from '../../lib/firebase-server';
 import { detectLanguage } from '../../lib/language-server';
 import { Metadata } from 'next';
 import { LocalBusinessStructuredData } from '../../components/seo/StructuredData';
+import { useEffect } from 'react';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useSearchParams } from 'next/navigation';
+
+
 
 
 // Homepage-specific metadata - this overrides layout metadata
@@ -70,14 +75,21 @@ const serverTranslations = {
   }
 };
 
-export default async function HomePage() {
-  const language = await detectLanguage();
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  // Get language from search params
+  const langParam = searchParams.lang as string;
+  const language = (['en', 'fr', 'ar', 'es'].includes(langParam) ? langParam : 'en') as 'en' | 'fr' | 'ar' | 'es';
+  
   const destinations = await selectTopDestinations(8);
   const t = serverTranslations[language];
 
   return (
     <>
-     <LocalBusinessStructuredData />
+      <LocalBusinessStructuredData />
       <Hero />
       <section id="featured" className="py-16 bg-white">
         <div className="container mx-auto px-4">
@@ -102,13 +114,14 @@ export default async function HomePage() {
                   region: dest.region,
                   highlights: dest.highlights?.slice(0, 3) || [],
                 }}
+               // currentLanguage={language}
               />
             ))}
           </div>
 
           <div className="text-center mt-12">
             <a
-              href="/destinations"
+              href={`/destinations?lang=${language}`}
               className="bg-primary-gold text-black px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 inline-block border-1 border-green-600 shadow-md"
             >
               {t.exploreAll}

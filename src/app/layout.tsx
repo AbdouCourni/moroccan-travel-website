@@ -2,13 +2,15 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { detectLanguage } from '../../lib/language-server';
+import { detectLanguage,getLanguageFromPath  } from '../../lib/language-server';
 import { LanguageProvider } from '../../contexts/LanguageContext';
 import Script from 'next/script';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { GoogleAnalyticsWrapper } from '../../components/GoogleAnalytics';
 import { AuthProvider } from '../../contexts/AuthContext';
+import { usePathname } from 'next/navigation';
+import ClientLanguageWrapper from '../../components/ClientLanguageWrapper'; // Import the client com
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -97,9 +99,9 @@ export const metadata: Metadata = {
     ],
     shortcut: ['/favicon.ico'],
   },
-  verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION, // Add to your .env.local
-  },
+  // verification: {
+  //   google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION, // Add to your .env.local
+  // },
 };
 
 export default async function RootLayout({
@@ -163,15 +165,16 @@ export default async function RootLayout({
           }}
         />
         
-        <LanguageProvider initialLanguage={language}>
+        <ClientLanguageWrapper>
           <AuthProvider>
             <Header />
             <main>{children}</main>
             <GoogleAnalyticsWrapper />
             <Footer/>
           </AuthProvider>
-        </LanguageProvider>   
+        </ClientLanguageWrapper>   
       </body>
     </html>
   );
 }
+
