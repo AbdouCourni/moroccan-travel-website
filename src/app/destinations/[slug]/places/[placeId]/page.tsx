@@ -6,13 +6,74 @@ import { Star, MapPin, Clock, Calendar, Heart, Share2, Navigation, Phone, Globe 
 import { MapLoader } from '../../../../../../components/MapLoader';
 import { convertFirebaseData } from '../../../../../../lib/firebase-utils';
 import { LocationShare } from '../../../../../../components/LocationShare';
-
+import { Metadata } from 'next';
+import { PlaceStructuredData } from '../../../../../../components/seo/StructuredData';
+import { generatePlaceSEO } from '../../../../../../utils/seo-utils';
 
 interface PlacePageProps {
   params: {
     slug: string;
     placeId: string;
   };
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({
+  params,
+}: PlacePageProps): Promise<Metadata> {
+  const destination = await getDestinationBySlug(params.slug);
+  
+  if (!destination) {
+    return {
+      title: 'Destination Not Found',
+      description: 'The requested destination could not be found.',
+    };
+  }
+
+  const place = await getPlaceById(destination.id, params.placeId);
+  
+  if (!place) {
+    return {
+      title: 'Place Not Found',
+      description: 'The requested place could not be found.',
+    };
+  }
+
+  const seoConfig = generatePlaceSEO(place, destination);
+  
+  return {
+    title: seoConfig.title,
+    description: seoConfig.description,
+    keywords: seoConfig.keywords,
+    openGraph: {
+      ...seoConfig.openGraph,
+      title: seoConfig.title,
+      description: seoConfig.description,
+      url: `https://morocompase.com/destinations/${params.slug}/places/${params.placeId}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoConfig.title,
+      description: seoConfig.description,
+      images: seoConfig.openGraph?.images?.[0]?.url || '/twitter-image.jpg',
+    },
+    alternates: {
+      canonical: `/destinations/${params.slug}/places/${params.placeId}`,
+      languages: {
+        'en': `/destinations/${params.slug}/places/${params.placeId}`,
+        'fr': `/fr/destinations/${params.slug}/places/${params.placeId}`,
+        'ar': `/ar/destinations/${params.slug}/places/${params.placeId}`,
+        'es': `/es/destinations/${params.slug}/places/${params.placeId}`,
+      },
+    },
+  };
+}
+
+// Generate static params for SSG
+export async function generateStaticParams() {
+  // This would fetch all places to pre-generate pages
+  // For now, return empty array - you can implement this later
+  return [];
 }
 
 export default async function PlacePage({ params }: PlacePageProps) {
@@ -32,15 +93,20 @@ export default async function PlacePage({ params }: PlacePageProps) {
 
   // Convert Firebase data
   const convertedPlace = convertFirebaseData(place);
+  const convertedDestination = convertFirebaseData(destination);
 
   const displayName = convertedPlace.name?.en || 'Unnamed Place';
   const displayDescription = convertedPlace.description?.en || 'No description available.';
+  const destinationName = convertedDestination.name?.en || 'Unknown Destination';
 
   // Check if we have valid coordinates for the map - FIXED based on your type
   const hasValidLocation = convertedPlace.location?.coordinates?.lat && convertedPlace.location?.coordinates?.lng;
 
+
   return (
     <div className="min-h-screen bg-white">
+          {/* Add Structured Data for SEO */}
+      <PlaceStructuredData place={convertedPlace} destination={convertedDestination} />
       {/* Hero Section */}
       <section className="relative h-96">
         <div className="absolute inset-0">

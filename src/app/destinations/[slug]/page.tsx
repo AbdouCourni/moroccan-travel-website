@@ -9,7 +9,10 @@ import { AccommodationCard } from '../../../../components/AccommodationCard';
 import { ActivityCard } from '../../../../components/ActivityCard';
 import { MapPin, Calendar, Star, Navigation, Home, Car, Bus, Utensils, Mountain, Camera } from 'lucide-react';
 import { detectLanguage, getLocalizedText } from '../../../../lib/language-server';
-import { convertFirebaseData } from '../../../../lib/firebase-utils';
+import { convertDestinationData, convertToPlainObject } from '../../../../lib/firebase-utils';
+import { Metadata } from 'next';
+import { DestinationStructuredData } from '../../../../components/seo/StructuredData';
+import { generateDestinationSEO } from '../../../../utils/seo-utils';
 
 // Server-side translations
 const translations = {
@@ -153,7 +156,7 @@ const mockTransportation = [
     description: 'Comfortable rail service connecting major cities',
     price: 'From $15',
     duration: '3 hours from Casablanca',
-    image: 'https://images.unsplash.com/photo-1599661048171-5d5c0dea5acf?w=300'
+    image: 'https://images.unsplash.com-1599661048171-5d5c0dea5acf?w=300'
   },
   {
     type: 'bus',
@@ -172,6 +175,58 @@ const mockTransportation = [
     image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=300'
   }
 ];
+
+// Generate metadata for SEO
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const destination = await getDestinationBySlug(params.slug);
+  
+  if (!destination) {
+    return {
+      title: 'Destination Not Found',
+      description: 'The requested destination could not be found.',
+    };
+  }
+
+  const seoConfig = generateDestinationSEO(destination);
+  
+  return {
+    title: seoConfig.title,
+    description: seoConfig.description,
+    keywords: seoConfig.keywords,
+    openGraph: {
+      ...seoConfig.openGraph,
+      title: seoConfig.title,
+      description: seoConfig.description,
+      url: `https://morocompase.com/destinations/${params.slug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoConfig.title,
+      description: seoConfig.description,
+      images: seoConfig.openGraph?.images?.[0]?.url || '/twitter-image.jpg',
+    },
+    alternates: {
+      canonical: `/destinations/${params.slug}`,
+      languages: {
+        'en': `/destinations/${params.slug}`,
+        'fr': `/fr/destinations/${params.slug}`,
+        'ar': `/ar/destinations/${params.slug}`,
+        'es': `/es/destinations/${params.slug}`,
+      },
+    },
+  };
+}
+
+// Generate static params for SSG
+export async function generateStaticParams() {
+  // This would fetch all destinations to pre-generate pages
+  // For now, return empty array - you can implement this later
+  return [];
+}
 
 export default async function DestinationPage({
   params,
@@ -197,7 +252,9 @@ export default async function DestinationPage({
   const popularPlaces = await getPopularPlaces(destination.id, 3);
 
   // Convert Firebase data to plain objects
-  const convertedPlaces = convertFirebaseData(places);
+  const convertedPlaces = convertToPlainObject(places);
+    // ✅ Use specific converter for destination
+  const convertedDestination = convertDestinationData(destination);
 
   // Get localized content
   const displayName = getLocalizedText(destination.name, currentLanguage);
@@ -208,6 +265,9 @@ export default async function DestinationPage({
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Add Structured Data for SEO */}
+      <DestinationStructuredData destination={convertedDestination} />
+      
       {/* Modern Hero Section with Image Slider */}
       <section className="relative h-[70vh] min-h-[600px]">
         {destination.images && destination.images.length > 1 ? (
@@ -293,7 +353,9 @@ export default async function DestinationPage({
         </div>
       </section>
 
-      {/* Quick Navigation */}
+      {/* Rest of your existing JSX remains exactly the same */}
+	  
+    {/* Quick Navigation */}
       <section className="sticky top-0 z-40 bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex overflow-x-auto py-4 space-x-8">

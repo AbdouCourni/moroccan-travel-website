@@ -3,6 +3,48 @@ import Hero from '../../components/Hero';
 import DestinationCard from '../../components/DestinationCard';
 import { selectTopDestinations } from '../../lib/firebase-server';
 import { detectLanguage } from '../../lib/language-server';
+import { Metadata } from 'next';
+import { LocalBusinessStructuredData } from '../../components/seo/StructuredData';
+
+
+// Homepage-specific metadata - this overrides layout metadata
+export const metadata: Metadata = {
+  title: "Discover Morocco's Hidden Gems - Authentic Travel Experiences | MoroCompase",
+  description: "Explore Morocco with local experts. Discover Marrakech, Fez, Sahara Desert tours, authentic riads, and hidden cultural gems. Your complete Morocco travel guide.",
+  keywords: [
+    "Morocco travel",
+    "Marrakech guide", 
+    "Sahara Desert tours",
+    "Fez medina",
+    "Moroccan riads",
+    "local experiences",
+    "Morocco tourism",
+    "best time to visit Morocco",
+    "Morocco travel packages"
+  ],
+  openGraph: {
+    title: "MoroCompase - Discover Authentic Morocco Travel Experiences",
+    description: "Your local guide to Morocco's hidden gems, cultural tours, and authentic stays",
+    images: [
+      {
+        url: "/og-home.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Discover Authentic Morocco with MoroCompase",
+      },
+    ],
+    url: "https://morocompase.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MoroCompase - Discover Morocco's Hidden Gems",
+    description: "Authentic Moroccan travel experiences with local insights",
+    images: ["/twitter-home.jpeg"],
+  },
+  alternates: {
+    canonical: "/",
+  },
+};
 
 // Translations for server component
 const serverTranslations = {
@@ -30,11 +72,12 @@ const serverTranslations = {
 
 export default async function HomePage() {
   const language = await detectLanguage();
-  const destinations = await selectTopDestinations(20);
+  const destinations = await selectTopDestinations(8);
   const t = serverTranslations[language];
 
   return (
     <>
+     <LocalBusinessStructuredData />
       <Hero />
       <section id="featured" className="py-16 bg-white">
         <div className="container mx-auto px-4">
