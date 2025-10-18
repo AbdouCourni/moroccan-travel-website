@@ -12,7 +12,7 @@ export default async function PlacesPage({
 }: {
   params: { slug: string };
 }) {
-  const slug = params.slug;
+  const slug = await params.slug;
   const destination = await getDestinationBySlug(slug);
 
   if (!destination) {

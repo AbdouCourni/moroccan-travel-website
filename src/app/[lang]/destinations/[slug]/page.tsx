@@ -236,7 +236,7 @@ export default async function DestinationPage({
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const slug = params.slug;
+  const slug = await params.slug;
   const destination = await getDestinationBySlug(slug);
 
   if (!destination) {
@@ -244,7 +244,7 @@ export default async function DestinationPage({
   }
 
   // Detect language from search params
-  const langParam = searchParams.lang as string;
+  const langParam = await searchParams.lang as string;
   const language = await detectLanguage();
   const currentLanguage = (['en', 'fr', 'ar', 'es'].includes(langParam) ? langParam : language) as 'en' | 'fr' | 'ar' | 'es';
 

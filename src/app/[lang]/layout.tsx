@@ -8,7 +8,7 @@ import { GoogleAnalyticsWrapper } from '../../../components/GoogleAnalytics';
 import { isRTL, Language } from '../../../lib/language-server'; // Import utility for RTL
 import '../globals.css';
 
-export default function LangLayout({
+export default async function LangLayout({
   children,
   params,
 }: {

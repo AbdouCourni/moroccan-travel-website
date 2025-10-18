@@ -21,7 +21,8 @@ interface PlacePageProps {
 export async function generateMetadata({
   params,
 }: PlacePageProps): Promise<Metadata> {
-  const destination = await getDestinationBySlug(params.slug);
+  const slug= await params.slug;
+  const destination = await getDestinationBySlug(slug);
   
   if (!destination) {
     return {
@@ -49,7 +50,7 @@ export async function generateMetadata({
       ...seoConfig.openGraph,
       title: seoConfig.title,
       description: seoConfig.description,
-      url: `https://morocompase.com/destinations/${params.slug}/places/${params.placeId}`,
+      url: `https://morocompase.com/destinations/${slug}/places/${params.placeId}`,
     },
     twitter: {
       card: 'summary_large_image',
@@ -58,12 +59,12 @@ export async function generateMetadata({
       images: seoConfig.openGraph?.images?.[0]?.url || '/twitter-image.jpg',
     },
     alternates: {
-      canonical: `/destinations/${params.slug}/places/${params.placeId}`,
+      canonical: `/destinations/${slug}/places/${params.placeId}`,
       languages: {
-        'en': `/destinations/${params.slug}/places/${params.placeId}`,
-        'fr': `/fr/destinations/${params.slug}/places/${params.placeId}`,
-        'ar': `/ar/destinations/${params.slug}/places/${params.placeId}`,
-        'es': `/es/destinations/${params.slug}/places/${params.placeId}`,
+        'en': `/destinations/${slug}/places/${params.placeId}`,
+        'fr': `/fr/destinations/${slug}/places/${params.placeId}`,
+        'ar': `/ar/destinations/${slug}/places/${params.placeId}`,
+        'es': `/es/destinations/${slug}/places/${params.placeId}`,
       },
     },
   };
