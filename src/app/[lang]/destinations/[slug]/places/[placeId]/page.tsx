@@ -1,14 +1,14 @@
 // app/destinations/[slug]/places/[placeId]/page.tsx
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getDestinationBySlug, getPlaceById } from '../../../../../../lib/firebase-server';
+import { getDestinationBySlug, getPlaceById } from '../../../../../../../lib/firebase-server';
 import { Star, MapPin, Clock, Calendar, Heart, Share2, Navigation, Phone, Globe } from 'lucide-react';
-import { MapLoader } from '../../../../../../components/MapLoader';
-import { convertFirebaseData } from '../../../../../../lib/firebase-utils';
-import { LocationShare } from '../../../../../../components/LocationShare';
+import { MapLoader } from '../../../../../../../components/MapLoader';
+import { convertFirebaseData } from '../../../../../../../lib/firebase-utils';
+import { LocationShare } from '../../../../../../../components/LocationShare';
 import { Metadata } from 'next';
-import { PlaceStructuredData } from '../../../../../../components/seo/StructuredData';
-import { generatePlaceSEO } from '../../../../../../utils/seo-utils';
+import { PlaceStructuredData } from '../../../../../../../components/seo/StructuredData';
+import { generatePlaceSEO } from '../../../../../../../utils/seo-utils';
 
 interface PlacePageProps {
   params: {
