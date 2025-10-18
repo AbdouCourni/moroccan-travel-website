@@ -17,64 +17,52 @@ interface PlacePageProps {
   };
 }
 
-// Generate metadata for SEO
+// Generate metadata for SEO - FIXED VERSION
 export async function generateMetadata({
   params,
 }: PlacePageProps): Promise<Metadata> {
-  const slug= await params.slug;
-  const destination = await getDestinationBySlug(slug);
-  
-  if (!destination) {
-    return {
-      title: 'Destination Not Found',
-      description: 'The requested destination could not be found.',
-    };
-  }
+  const { slug, placeId } = params; // FIXED: Remove await
 
-  const place = await getPlaceById(destination.id, params.placeId);
-  
-  if (!place) {
-    return {
-      title: 'Place Not Found',
-      description: 'The requested place could not be found.',
-    };
-  }
+  try {
+    const destination = await getDestinationBySlug(slug);
+    
+    if (!destination) {
+      return {
+        title: 'Destination Not Found',
+        description: 'The requested destination could not be found.',
+      };
+    }
 
-  const seoConfig = generatePlaceSEO(place, destination);
-  
-  return {
-    title: seoConfig.title,
-    description: seoConfig.description,
-    keywords: seoConfig.keywords,
-    openGraph: {
-      ...seoConfig.openGraph,
-      title: seoConfig.title,
-      description: seoConfig.description,
-      url: `https://morocompase.com/destinations/${slug}/places/${params.placeId}`,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: seoConfig.title,
-      description: seoConfig.description,
-      images: seoConfig.openGraph?.images?.[0]?.url || '/twitter-image.jpg',
-    },
-    alternates: {
-      canonical: `/destinations/${slug}/places/${params.placeId}`,
-      languages: {
-        'en': `/destinations/${slug}/places/${params.placeId}`,
-        'fr': `/fr/destinations/${slug}/places/${params.placeId}`,
-        'ar': `/ar/destinations/${slug}/places/${params.placeId}`,
-        'es': `/es/destinations/${slug}/places/${params.placeId}`,
+    const place = await getPlaceById(destination.id, placeId);
+    
+    if (!place) {
+      return {
+        title: 'Place Not Found',
+        description: 'The requested place could not be found.',
+      };
+    }
+
+    const convertedPlace = convertFirebaseData(place);
+    const displayName = convertedPlace.name?.en || 'Unnamed Place';
+    const displayDescription = convertedPlace.description?.en || 'No description available.';
+
+    return {
+      title: `${displayName} - ${destination.name.en} | MoroCompase`,
+      description: displayDescription,
+      openGraph: {
+        title: `${displayName} - ${destination.name.en}`,
+        description: displayDescription,
+        images: convertedPlace.images?.[0] ? [convertedPlace.images[0]] : [],
+        type: 'article',
       },
-    },
-  };
-}
-
-// Generate static params for SSG
-export async function generateStaticParams() {
-  // This would fetch all places to pre-generate pages
-  // For now, return empty array - you can implement this later
-  return [];
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Place Details | MoroCompase',
+      description: 'Discover this amazing place in Morocco.',
+    };
+  }
 }
 
 export default async function PlacePage({ params }: PlacePageProps) {
@@ -98,9 +86,8 @@ export default async function PlacePage({ params }: PlacePageProps) {
 
   const displayName = convertedPlace.name?.en || 'Unnamed Place';
   const displayDescription = convertedPlace.description?.en || 'No description available.';
-  const destinationName = convertedDestination.name?.en || 'Unknown Destination';
 
-  // Check if we have valid coordinates for the map - FIXED based on your type
+  // Check if we have valid coordinates for the map
   const hasValidLocation = convertedPlace.location?.coordinates?.lat && convertedPlace.location?.coordinates?.lng;
 
 
