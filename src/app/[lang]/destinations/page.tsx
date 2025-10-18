@@ -1,6 +1,6 @@
 // app/destinations/page.tsx
 import Link from 'next/link';
-import { selectTopDestinations, getAllDestinations,getAllDestinationsByRanking } from '../../../lib/firebase-server';
+import { selectTopDestinations, getAllDestinations,getAllDestinationsByRanking } from '../../../../lib/firebase-server';
 import { MapPin, Star, Calendar } from 'lucide-react';
 
 // Language configuration

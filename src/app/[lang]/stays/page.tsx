@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
-import { Accommodation } from '../../../types';
+import { db } from '../../../../lib/firebase';
+import { Accommodation } from '../../../../types';
 import Image from 'next/image';
 
 export default function StaysPage() {

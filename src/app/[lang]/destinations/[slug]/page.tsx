@@ -1,19 +1,19 @@
 // app/destinations/[slug]/page.tsx
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces } from '../../../../lib/firebase-server';
+import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces } from '../../../../../lib/firebase-server';
 //import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces } from '../../../../lib/firebase-server';
-import { DestinationGallery } from '../../../../components/DestinationGallery';
-import { ImageSlider } from '../../../../components/ImageSlider';
-import { PlacesGrid } from '../../../../components/PlacesGrid';
-import { AccommodationCard } from '../../../../components/AccommodationCard';
-import { ActivityCard } from '../../../../components/ActivityCard';
+import { DestinationGallery } from '../../../../../components/DestinationGallery';
+import { ImageSlider } from '../../../../../components/ImageSlider';
+import { PlacesGrid } from '../../../../../components/PlacesGrid';
+import { AccommodationCard } from '../../../../../components/AccommodationCard';
+import { ActivityCard } from '../../../../../components/ActivityCard';
 import { MapPin, Calendar, Star, Navigation, Home, Car, Bus, Utensils, Mountain, Camera } from 'lucide-react';
-import { detectLanguage, getLocalizedText } from '../../../../lib/language-server';
-import { convertFirebaseData } from '../../../../lib/firebase-utils';
+import { detectLanguage, getLocalizedText } from '../../../../../lib/language-server';
+import { convertFirebaseData,convertDestinationData } from '../../../../../lib/firebase-utils';
 import { Metadata } from 'next';
-import { DestinationStructuredData } from '../../../../components/seo/StructuredData';
-import { generateDestinationSEO } from '../../../../utils/seo-utils';
+import { DestinationStructuredData } from '../../../../../components/seo/StructuredData';
+import { generateDestinationSEO } from '../../../../../utils/seo-utils';
 
 // Server-side translations
 const translations = {
@@ -254,6 +254,7 @@ export default async function DestinationPage({
 
   // Convert Firebase data to plain objects
   const convertedPlaces = convertFirebaseData(places);
+  const convertedDestination = convertDestinationData(destination);
 
   // Get localized content
   const displayName = getLocalizedText(destination.name, currentLanguage);
@@ -265,7 +266,7 @@ export default async function DestinationPage({
   return (
     <div className="min-h-screen bg-white">
       {/* Add Structured Data for SEO */}
-      <DestinationStructuredData destination={destination} />
+      <DestinationStructuredData destination={convertedDestination} />
       
       {/* Modern Hero Section with Image Slider */}
       <section className="relative h-[70vh] min-h-[600px]">

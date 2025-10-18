@@ -4,9 +4,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Recipe } from '../../../../types';
-import { getRecipeById } from '../../../../lib/firebase-server';
-import { event } from '../../../../lib/gtag';
+import { Recipe } from '../../../../../types';
+import { getRecipeById } from '../../../../../lib/firebase-server';
+import { event } from '../../../../../lib/gtag';
 
 export default function RecipeDetailPage() {
     const params = useParams();

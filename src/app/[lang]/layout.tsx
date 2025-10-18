@@ -21,20 +21,21 @@ export default function LangLayout({
 
   return (
     // Set 'dir' and 'lang' attributes based on the URL parameter
-    <html lang={lang} dir={isRTL(lang) ? 'rtl' : 'ltr'}>
-      <body>
+    // <html lang={lang} dir={isRTL(lang) ? 'rtl' : 'ltr'}>
+      <>
         {/* Initialize the client-side context with the server-determined language */}
         <LanguageProvider initialLanguage={lang}>
           <AuthProvider>
             
-         
+            <Header />
+            
             <main>{children}</main>
             <GoogleAnalyticsWrapper />
            
-            
+            <Footer />
           </AuthProvider>
         </LanguageProvider>
-      </body>
-    </html>
+      </>
+   
   );
 }
