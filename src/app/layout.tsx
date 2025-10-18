@@ -156,6 +156,7 @@ export default async function RootLayout({
                 addressCountry: 'MA',
                 addressLocality: 'Marrakech',
               },
+              "logo": "https://www.morocompase.com/apple-touch-icon.png",
               areaServed: 'Morocco',
               offers: {
                 '@type': 'Offer',
