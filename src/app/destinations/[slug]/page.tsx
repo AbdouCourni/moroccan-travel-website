@@ -2,6 +2,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces } from '../../../../lib/firebase-server';
+//import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces } from '../../../../lib/firebase-server';
 import { DestinationGallery } from '../../../../components/DestinationGallery';
 import { ImageSlider } from '../../../../components/ImageSlider';
 import { PlacesGrid } from '../../../../components/PlacesGrid';
@@ -9,7 +10,7 @@ import { AccommodationCard } from '../../../../components/AccommodationCard';
 import { ActivityCard } from '../../../../components/ActivityCard';
 import { MapPin, Calendar, Star, Navigation, Home, Car, Bus, Utensils, Mountain, Camera } from 'lucide-react';
 import { detectLanguage, getLocalizedText } from '../../../../lib/language-server';
-import { convertDestinationData, convertToPlainObject } from '../../../../lib/firebase-utils';
+import { convertFirebaseData } from '../../../../lib/firebase-utils';
 import { Metadata } from 'next';
 import { DestinationStructuredData } from '../../../../components/seo/StructuredData';
 import { generateDestinationSEO } from '../../../../utils/seo-utils';
@@ -252,9 +253,7 @@ export default async function DestinationPage({
   const popularPlaces = await getPopularPlaces(destination.id, 3);
 
   // Convert Firebase data to plain objects
-  const convertedPlaces = convertToPlainObject(places);
-    // ✅ Use specific converter for destination
-  const convertedDestination = convertDestinationData(destination);
+  const convertedPlaces = convertFirebaseData(places);
 
   // Get localized content
   const displayName = getLocalizedText(destination.name, currentLanguage);
@@ -266,7 +265,7 @@ export default async function DestinationPage({
   return (
     <div className="min-h-screen bg-white">
       {/* Add Structured Data for SEO */}
-      <DestinationStructuredData destination={convertedDestination} />
+      <DestinationStructuredData destination={destination} />
       
       {/* Modern Hero Section with Image Slider */}
       <section className="relative h-[70vh] min-h-[600px]">

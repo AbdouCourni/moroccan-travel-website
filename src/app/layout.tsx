@@ -1,16 +1,15 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
-import { detectLanguage,getLanguageFromPath  } from '../../lib/language-server';
+import { detectLanguage  } from '../../lib/language-server';
 import { LanguageProvider } from '../../contexts/LanguageContext';
 import Script from 'next/script';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { GoogleAnalyticsWrapper } from '../../components/GoogleAnalytics';
 import { AuthProvider } from '../../contexts/AuthContext';
-import { usePathname } from 'next/navigation';
-import ClientLanguageWrapper from '../../components/ClientLanguageWrapper'; // Import the client com
+// import { usePathname } from 'next/navigation'; // Removed, as it's a client hook in a server component
+//import ClientLanguageWrapper from '../../components/ClientLanguageWrapper'; // Import the client com
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -103,6 +102,12 @@ export const metadata: Metadata = {
   //   google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION, // Add to your .env.local
   // },
 };
+const handleLanguageChange = (lang: string) => {
+  const params = new URLSearchParams(window.location.search);
+  params.set('lang', lang);
+  window.history.pushState({}, '', `${window.location.pathname}?${params}`);
+  setLanguage(lang);
+};
 
 export default async function RootLayout({
   children,
@@ -165,16 +170,19 @@ export default async function RootLayout({
           }}
         />
         
-        <ClientLanguageWrapper>
+        
           <AuthProvider>
             <Header />
             <main>{children}</main>
             <GoogleAnalyticsWrapper />
             <Footer/>
           </AuthProvider>
-        </ClientLanguageWrapper>   
+        
       </body>
     </html>
   );
 }
 
+function setLanguage(lang: string) {
+  throw new Error('Function not implemented.');
+}

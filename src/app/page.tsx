@@ -8,6 +8,7 @@ import { LocalBusinessStructuredData } from '../../components/seo/StructuredData
 import { useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSearchParams } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 
 
@@ -75,60 +76,65 @@ const serverTranslations = {
   }
 };
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  // Get language from search params
-  const langParam = searchParams.lang as string;
-  const language = (['en', 'fr', 'ar', 'es'].includes(langParam) ? langParam : 'en') as 'en' | 'fr' | 'ar' | 'es';
-  
-  const destinations = await selectTopDestinations(8);
-  const t = serverTranslations[language];
-
-  return (
-    <>
-      <LocalBusinessStructuredData />
-      <Hero />
-      <section id="featured" className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-              {t.title}
-            </h2>
-            <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">
-              {t.description}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {destinations.map((dest) => (
-              <DestinationCard
-                key={dest.slug}
-                destination={{
-                  slug: dest.slug,
-                  name: dest.name,
-                  image: dest.images?.[0] || '/images/placeholder.jpg',
-                  description: dest.description,
-                  region: dest.region,
-                  highlights: dest.highlights?.slice(0, 3) || [],
-                }}
-               // currentLanguage={language}
-              />
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <a
-              href={`/destinations?lang=${language}`}
-              className="bg-primary-gold text-black px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 inline-block border-1 border-green-600 shadow-md"
-            >
-              {t.exploreAll}
-            </a>
-          </div>
-        </div>
-      </section>
-    </>
-  );
+export default function RedirectToDefaultLanguage() {
+  // Permanently redirects the root URL (/) to the English URL (/en)
+  redirect('/en');
 }
+
+// export default async function HomePage({
+//   searchParams,
+// }: {
+//   searchParams: { [key: string]: string | string[] | undefined };
+// }) {
+//   // Get language from search params
+//   const langParam = searchParams.lang as string;
+//   const language = (['en', 'fr', 'ar', 'es'].includes(langParam) ? langParam : 'en') as 'en' | 'fr' | 'ar' | 'es';
+  
+//   const destinations = await selectTopDestinations(8);
+//   const t = serverTranslations[language];
+
+//   return (
+//     <>
+//       <LocalBusinessStructuredData />
+//       <Hero />
+//       <section id="featured" className="py-16 bg-white">
+//         <div className="container mx-auto px-4">
+//           <div className="text-center mb-12">
+//             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+//               {t.title}
+//             </h2>
+//             <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">
+//               {t.description}
+//             </p>
+//           </div>
+
+//           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+//             {destinations.map((dest) => (
+//               <DestinationCard
+//                 key={dest.slug}
+//                 destination={{
+//                   slug: dest.slug,
+//                   name: dest.name,
+//                   image: dest.images?.[0] || '/images/placeholder.jpg',
+//                   description: dest.description,
+//                   region: dest.region,
+//                   highlights: dest.highlights?.slice(0, 3) || [],
+//                 }}
+//                // currentLanguage={language}
+//               />
+//             ))}
+//           </div>
+
+//           <div className="text-center mt-12">
+//             <a
+//               href={`/destinations?lang=${language}`}
+//               className="bg-primary-gold text-black px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 inline-block border-1 border-green-600 shadow-md"
+//             >
+//               {t.exploreAll}
+//             </a>
+//           </div>
+//         </div>
+//       </section>
+//     </>
+//   );
+// }
