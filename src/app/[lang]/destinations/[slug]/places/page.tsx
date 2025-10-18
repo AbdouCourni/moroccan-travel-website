@@ -1,11 +1,11 @@
 // app/destinations/[slug]/places/page.tsx
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getDestinationBySlug, getPlacesByDestination, getPlacesByCategory } from '../../../../../lib/firebase-server';
-import { PlacesGrid } from '../../../../../components/PlacesGrid';
-import { MapWithPlaces } from '../../../../../components/MapWithPlaces'; // Import the new component
+import { getDestinationBySlug, getPlacesByDestination, getPlacesByCategory } from '../../../../../../lib/firebase-server';
+import { PlacesGrid } from '../../../../../../components/PlacesGrid';
+import { MapWithPlaces } from '../../../../../../components/MapWithPlaces'; // Import the new component
 import { MapPin, Filter, Navigation } from 'lucide-react';
-import { convertFirebaseData } from '../../../../../lib/firebase-utils';
+import { convertFirebaseData } from '../../../../../../lib/firebase-utils';
 
 export default async function PlacesPage({
   params,
