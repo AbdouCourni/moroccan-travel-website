@@ -1,8 +1,7 @@
-// app/destinations/[slug]/page.tsx
+// app/[lang]/destinations/[slug]/page.tsx
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces } from '../../../../../lib/firebase-server';
-//import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces } from '../../../../lib/firebase-server';
 import { DestinationGallery } from '../../../../../components/DestinationGallery';
 import { ImageSlider } from '../../../../../components/ImageSlider';
 import { PlacesGrid } from '../../../../../components/PlacesGrid';
@@ -10,10 +9,10 @@ import { AccommodationCard } from '../../../../../components/AccommodationCard';
 import { ActivityCard } from '../../../../../components/ActivityCard';
 import { MapPin, Calendar, Star, Navigation, Home, Car, Bus, Utensils, Mountain, Camera } from 'lucide-react';
 import { detectLanguage, getLocalizedText } from '../../../../../lib/language-server';
-import { convertFirebaseData,convertDestinationData } from '../../../../../lib/firebase-utils';
+import { convertFirebaseData, convertDestinationData } from '../../../../../lib/firebase-utils';
 import { Metadata } from 'next';
 import { DestinationStructuredData } from '../../../../../components/seo/StructuredData';
-import { generateDestinationSEO } from '../../../../../utils/seo-utils';
+import { Place } from '../../../../../types';
 
 // Server-side translations
 const translations = {
@@ -111,9 +110,8 @@ const translations = {
   }
 };
 
-// Mock data (same as before)
+// Mock data
 const mockAccommodations = [
-  // ... your mock accommodations data
   {
     id: '1',
     name: 'Luxury Riad in Medina',
@@ -150,14 +148,13 @@ const mockAccommodations = [
 ];
 
 const mockTransportation = [
-  // ... your mock transportation data
-   {
+  {
     type: 'train',
     name: 'ONCF Train',
     description: 'Comfortable rail service connecting major cities',
     price: 'From $15',
     duration: '3 hours from Casablanca',
-    image: 'https://images.unsplash.com-1599661048171-5d5c0dea5acf?w=300'
+    image: '/images/train-placeholder.jpg'
   },
   {
     type: 'bus',
@@ -165,7 +162,7 @@ const mockTransportation = [
     description: 'Reliable bus service throughout Morocco',
     price: 'From $10',
     duration: '4 hours from Casablanca',
-    image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=300'
+    image: '/images/bus-placeholder.jpg'
   },
   {
     type: 'car_rental',
@@ -173,7 +170,7 @@ const mockTransportation = [
     description: 'Freedom to explore at your own pace',
     price: 'From $25/day',
     duration: 'Flexible',
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=300'
+    image: '/images/car-placeholder.jpg'
   }
 ];
 
@@ -181,359 +178,359 @@ const mockTransportation = [
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: { slug: string; lang: string };
 }): Promise<Metadata> {
-  const destination = await getDestinationBySlug(params.slug);
-  
-  if (!destination) {
+  try {
+    const destination = await getDestinationBySlug(params.slug);
+    
+    if (!destination) {
+      return {
+        title: 'Destination Not Found',
+        description: 'The requested destination could not be found.',
+      };
+    }
+
+    const displayName = destination.name?.en || 'Destination';
+    const displayDescription = destination.description?.en || 'Discover this amazing destination in Morocco';
+
     return {
-      title: 'Destination Not Found',
-      description: 'The requested destination could not be found.',
+      title: `${displayName} | Moroccan Destination | MoroCompase`,
+      description: displayDescription,
+      openGraph: {
+        title: `${displayName} | MoroCompase`,
+        description: displayDescription,
+        images: destination.images?.[0] ? [destination.images[0]] : ['/images/og-image.jpg'],
+        type: 'website',
+        url: `https://morocompase.com/${params.lang}/destinations/${params.slug}`,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${displayName} | MoroCompase`,
+        description: displayDescription,
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Destination | MoroCompase',
+      description: 'Discover amazing destinations in Morocco',
     };
   }
-
-  const seoConfig = generateDestinationSEO(destination);
-  
-  return {
-    title: seoConfig.title,
-    description: seoConfig.description,
-    keywords: seoConfig.keywords,
-    openGraph: {
-      ...seoConfig.openGraph,
-      title: seoConfig.title,
-      description: seoConfig.description,
-      url: `https://morocompase.com/destinations/${params.slug}`,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: seoConfig.title,
-      description: seoConfig.description,
-      images: seoConfig.openGraph?.images?.[0]?.url || '/twitter-image.jpg',
-    },
-    alternates: {
-      canonical: `/destinations/${params.slug}`,
-      languages: {
-        'en': `/destinations/${params.slug}`,
-        'fr': `/fr/destinations/${params.slug}`,
-        'ar': `/ar/destinations/${params.slug}`,
-        'es': `/es/destinations/${params.slug}`,
-      },
-    },
-  };
-}
-
-// Generate static params for SSG
-export async function generateStaticParams() {
-  // This would fetch all destinations to pre-generate pages
-  // For now, return empty array - you can implement this later
-  return [];
 }
 
 export default async function DestinationPage({
   params,
-  searchParams,
 }: {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: { slug: string; lang: string };
 }) {
-  const slug = await params.slug;
-  const destination = await getDestinationBySlug(slug);
+  try {
+    const { slug, lang } = params;
+    
+    // Validate language
+    const validLanguages = ['en', 'fr', 'ar', 'es'];
+    const currentLanguage = validLanguages.includes(lang) ? lang as 'en' | 'fr' | 'ar' | 'es' : 'en';
 
-  if (!destination) {
-    notFound();
-  }
+    // Get destination data
+    const destination = await getDestinationBySlug(slug);
+    if (!destination) {
+      console.log(`Destination not found for slug: ${slug}`);
+      notFound();
+    }
 
-  // Detect language from search params
-  const langParam = await searchParams.lang as string;
-  const language = await detectLanguage();
-  const currentLanguage = (['en', 'fr', 'ar', 'es'].includes(langParam) ? langParam : language) as 'en' | 'fr' | 'ar' | 'es';
+    // Get places data with error handling
+    let places: Place[] = [];
+    let popularPlaces = [];
+    
+    try {
+      places = await getPlacesByDestination(destination.id, 6);
+      popularPlaces = await getPopularPlaces(destination.id, 3);
+    } catch (error) {
+      console.error('Error fetching places:', error);
+      // Continue without places data
+    }
 
-  // Get places for this destination
-  const places = await getPlacesByDestination(destination.id, 6);
-  const popularPlaces = await getPopularPlaces(destination.id, 3);
+    // Convert Firebase data to plain objects
+    const convertedPlaces = convertFirebaseData(places);
+    const convertedDestination = convertDestinationData(destination);
 
-  // Convert Firebase data to plain objects
-  const convertedPlaces = convertFirebaseData(places);
-  const convertedDestination = convertDestinationData(destination);
+    // Get localized content with fallbacks
+    const displayName = getLocalizedText(destination.name, currentLanguage) || destination.name?.en || 'Destination';
+    const displayDescription = getLocalizedText(destination.description, currentLanguage) || destination.description?.en || 'Discover this amazing destination';
+    const regionName = getLocalizedText(destination.region, currentLanguage) || destination.region || 'Morocco';
 
-  // Get localized content
-  const displayName = getLocalizedText(destination.name, currentLanguage);
-  const displayDescription = getLocalizedText(destination.description, currentLanguage);
-  const regionName = getLocalizedText(destination.region, currentLanguage);
+    const t = (key: keyof typeof translations.en) => translations[currentLanguage]?.[key] || translations.en[key];
 
-  const t = (key: keyof typeof translations.en) => translations[currentLanguage]?.[key] || translations.en[key];
-
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Add Structured Data for SEO */}
-      <DestinationStructuredData destination={convertedDestination} />
-      
-      {/* Modern Hero Section with Image Slider */}
-      <section className="relative h-[70vh] min-h-[600px]">
-        {destination.images && destination.images.length > 1 ? (
-          <ImageSlider images={destination.images} alt={displayName} />
-        ) : (
-          <div className="absolute inset-0">
-            <img 
-              src={destination.images?.[0] || '/images/placeholder.jpg'} 
-              alt={displayName}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-          </div>
-        )}
+    return (
+      <div className="min-h-screen bg-white">
+        {/* Add Structured Data for SEO */}
+        <DestinationStructuredData destination={convertedDestination} />
         
-        {/* Floating Header */}
-        <div className="relative z-10 pt-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Link 
-              href="/destinations" 
-              className="inline-flex items-center text-white/90 hover:text-white transition-colors backdrop-blur-sm bg-white/10 rounded-full px-4 py-2 border border-white/20"
-            >
-              <Navigation className="w-4 h-4 mr-2" />
-              {t('backToDestinations')}
-            </Link>
+        {/* Modern Hero Section with Image Slider */}
+        <section className="relative h-[70vh] min-h-[600px]">
+          {destination.images && destination.images.length > 1 ? (
+            <ImageSlider images={destination.images} alt={displayName} />
+          ) : (
+            <div className="absolute inset-0">
+              <img 
+                src={destination.images?.[0] || '/images/placeholder.jpg'} 
+                alt={displayName}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+            </div>
+          )}
+          
+          {/* Floating Header */}
+          <div className="relative z-10 pt-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <Link 
+                href={`/${currentLanguage}/destinations`}
+                className="inline-flex items-center text-white/90 hover:text-white transition-colors backdrop-blur-sm bg-white/10 rounded-full px-4 py-2 border border-white/20"
+              >
+                <Navigation className="w-4 h-4 mr-2" />
+                {t('backToDestinations')}
+              </Link>
+            </div>
           </div>
-        </div>
 
-        {/* Hero Content */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-              <div className="text-white">
-                <div className="flex items-center gap-3 mb-3">
-                  <MapPin className="w-5 h-5" />
-                  <span className="text-lg font-medium">{regionName}</span>
+          {/* Hero Content */}
+          <div className="absolute bottom-0 left-0 right-0 z-10 p-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                <div className="text-white">
+                  <div className="flex items-center gap-3 mb-3">
+                    <MapPin className="w-5 h-5" />
+                    <span className="text-lg font-medium">{regionName}</span>
+                  </div>
+                  <h1 className="font-amiri text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-tight">
+                    {displayName}
+                  </h1>
+                  <p className="text-xl md:text-2xl max-w-3xl leading-relaxed opacity-95">
+                    {displayDescription}
+                  </p>
                 </div>
-                <h1 className="font-amiri text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-tight">
-                  {displayName}
-                </h1>
-                <p className="text-xl md:text-2xl max-w-3xl leading-relaxed opacity-95">
-                  {displayDescription}
-                </p>
-              </div>
-              
-              {/* Quick Facts */}
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-white max-w-md">
-                <h3 className="font-amiri text-2xl font-bold mb-4">{t('atAGlance')}</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5" />
-                    <div>
-                      <div className="font-medium">{t('bestTimeToVisit')}</div>
-                      <div className="text-sm opacity-90">
-                        {destination.bestSeason?.join(', ') || t('yearRound')}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Star className="w-5 h-5" />
-                    <div>
-                      <div className="font-medium">{t('topActivities')}</div>
-                      <div className="text-sm opacity-90">
-                        {destination.activities?.slice(0, 2).join(', ')}
-                      </div>
-                    </div>
-                  </div>
-                  {popularPlaces.length > 0 && (
+                
+                {/* Quick Facts */}
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-white max-w-md">
+                  <h3 className="font-amiri text-2xl font-bold mb-4">{t('atAGlance')}</h3>
+                  <div className="space-y-3">
                     <div className="flex items-center gap-3">
-                      <Camera className="w-5 h-5" />
+                      <Calendar className="w-5 h-5" />
                       <div>
-                        <div className="font-medium">{t('popularPlaces')}</div>
+                        <div className="font-medium">{t('bestTimeToVisit')}</div>
                         <div className="text-sm opacity-90">
-                          {popularPlaces.length}+ {t('attractions')}
+                          {destination.bestSeason?.join(', ') || t('yearRound')}
                         </div>
                       </div>
                     </div>
-                  )}
+                    <div className="flex items-center gap-3">
+                      <Star className="w-5 h-5" />
+                      <div>
+                        <div className="font-medium">{t('topActivities')}</div>
+                        <div className="text-sm opacity-90">
+                          {destination.activities?.slice(0, 2).join(', ') || 'Various activities'}
+                        </div>
+                      </div>
+                    </div>
+                    {popularPlaces.length > 0 && (
+                      <div className="flex items-center gap-3">
+                        <Camera className="w-5 h-5" />
+                        <div>
+                          <div className="font-medium">{t('popularPlaces')}</div>
+                          <div className="text-sm opacity-90">
+                            {popularPlaces.length}+ {t('attractions')}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Rest of your existing JSX remains exactly the same */}
-	  
-    {/* Quick Navigation */}
-      <section className="sticky top-0 z-40 bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex overflow-x-auto py-4 space-x-8">
-            <a href="#places" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
-              <MapPin className="w-4 h-4" />
-              {t('placesToVisit')}
-            </a>
-            <a href="#accommodation" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
-              <Home className="w-4 h-4" />
-              {t('whereToStay')}
-            </a>
-            <a href="#transport" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
-              <Car className="w-4 h-4" />
-              {t('gettingTo')} {displayName}
-            </a>
-            <a href="#activities" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
-              <Mountain className="w-4 h-4" />
-              {t('thingsToDo')}
-            </a>
-            <a href="#gallery" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
-              <Camera className="w-4 h-4" />
-              {t('discover')}
-            </a>
-          </nav>
-        </div>
-      </section>
-
-      {/* Places to Visit Section */}
-     {convertedPlaces.length > 0 && (
-  <section id="places" className="py-16 bg-gray-50">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-12">
-        <h2 className="font-amiri text-4xl font-bold text-gray-900 mb-4">
-          {t('mustVisitIn')} {displayName}
-        </h2>
-        <p className="text-xl text-gray-600 max-w-2xl">
-          {t('discoverTopAttractions')}
-        </p>
-      </div>
-
-      {/* Pass converted places instead of raw places */}
-      <PlacesGrid places={convertedPlaces} slug={destination.slug} />
-
-      {/* Moved button under PlacesGrid, aligned to right */}
-      <div className="flex justify-end mt-8">
-        <Link
-          href={`/destinations/${destination.slug}/places`}
-          className="bg-primary-gold text-black px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 border-green-600 border-1"
-        >
-          {t('viewAllPlaces')}
-        </Link>
-      </div>
-    </div>
-  </section>
-)}
-
-      {/* Accommodation Section */}
-      <section id="accommodation" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
-              {t('whereToStay')} {displayName}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              {t('findPerfectAccommodation')}
-            </p>
+        {/* Quick Navigation */}
+        <section className="sticky top-0 z-40 bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav className="flex overflow-x-auto py-4 space-x-8">
+              <a href="#places" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
+                <MapPin className="w-4 h-4" />
+                {t('placesToVisit')}
+              </a>
+              <a href="#accommodation" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
+                <Home className="w-4 h-4" />
+                {t('whereToStay')}
+              </a>
+              <a href="#transport" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
+                <Car className="w-4 h-4" />
+                {t('gettingTo')} {displayName}
+              </a>
+              <a href="#activities" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
+                <Mountain className="w-4 h-4" />
+                {t('thingsToDo')}
+              </a>
+              <a href="#gallery" className="flex items-center gap-2 whitespace-nowrap text-gray-600 hover:text-primary-gold transition-colors">
+                <Camera className="w-4 h-4" />
+                {t('discover')}
+              </a>
+            </nav>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mockAccommodations.map((accommodation) => (
-              <AccommodationCard key={accommodation.id} accommodation={accommodation} />
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link 
-              href={`/stays?city=${destination.slug}`}
-              className="bg-primary-gold text-white px-8 py-4 rounded-xl font-semibold hover:bg-opacity-90 transition duration-300 inline-block"
-            >
-              {t('browseAllAccommodations')}
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Transportation Section */}
-      <section id="transport" className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
-              {t('gettingTo')} {displayName}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              {t('chooseBestWay')}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mockTransportation.map((transport, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300">
-                <div className="h-48 overflow-hidden">
-                  <img 
-                    src={transport.image} 
-                    alt={transport.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    {transport.type === 'train' && <Bus className="w-6 h-6 text-moroccan-blue" />}
-                    {transport.type === 'bus' && <Bus className="w-6 h-6 text-primary-gold" />}
-                    {transport.type === 'car_rental' && <Car className="w-6 h-6 text-green-600" />}
-                    <h3 className="font-amiri text-xl font-bold text-dark-charcoal">{transport.name}</h3>
-                  </div>
-                  <p className="text-gray-600 mb-4">{transport.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-primary-gold">{transport.price}</span>
-                    <span className="text-sm text-gray-500">{transport.duration}</span>
-                  </div>
-                </div>
+        {/* Places to Visit Section */}
+        {convertedPlaces.length > 0 && (
+          <section id="places" className="py-16 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="mb-12">
+                <h2 className="font-amiri text-4xl font-bold text-gray-900 mb-4">
+                  {t('mustVisitIn')} {displayName}
+                </h2>
+                <p className="text-xl text-gray-600 max-w-2xl">
+                  {t('discoverTopAttractions')}
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Activities Section */}
-      {destination.activities && destination.activities.length > 0 && (
-        <section id="activities" className="py-16 bg-white">
+              <PlacesGrid places={convertedPlaces} slug={destination.slug} />
+
+              <div className="flex justify-end mt-8">
+                <Link
+                  href={`/${currentLanguage}/destinations/${destination.slug}/places`}
+                  className="bg-primary-gold text-black px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 border-green-600 border-1"
+                >
+                  {t('viewAllPlaces')}
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Accommodation Section */}
+        <section id="accommodation" className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
-                {t('thingsToDo')} {displayName}
+                {t('whereToStay')} {displayName}
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {t('experienceBestActivities')}
+                {t('findPerfectAccommodation')}
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {destination.activities.map((activity, index) => (
-                <ActivityCard key={index} activity={activity} index={index} />
+              {mockAccommodations.map((accommodation) => (
+                <AccommodationCard key={accommodation.id} accommodation={accommodation} />
+              ))}
+            </div>
+            <div className="text-center mt-12">
+              <Link 
+                href={`/${currentLanguage}/stays?city=${destination.slug}`}
+                className="bg-primary-gold text-white px-8 py-4 rounded-xl font-semibold hover:bg-opacity-90 transition duration-300 inline-block"
+              >
+                {t('browseAllAccommodations')}
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Transportation Section */}
+        <section id="transport" className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
+                {t('gettingTo')} {displayName}
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                {t('chooseBestWay')}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {mockTransportation.map((transport, index) => (
+                <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300">
+                  <div className="h-48 overflow-hidden">
+                    <img 
+                      src={transport.image} 
+                      alt={transport.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      {transport.type === 'train' && <Bus className="w-6 h-6 text-moroccan-blue" />}
+                      {transport.type === 'bus' && <Bus className="w-6 h-6 text-primary-gold" />}
+                      {transport.type === 'car_rental' && <Car className="w-6 h-6 text-green-600" />}
+                      <h3 className="font-amiri text-xl font-bold text-dark-charcoal">{transport.name}</h3>
+                    </div>
+                    <p className="text-gray-600 mb-4">{transport.description}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-primary-gold">{transport.price}</span>
+                      <span className="text-sm text-gray-500">{transport.duration}</span>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </section>
-      )}
 
-      {/* Gallery Section */}
-      {destination.images && destination.images.length > 1 && (
-        <section id="gallery" className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
-                {t('discover')} {displayName}
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {t('exploreBeauty')}
-              </p>
+        {/* Activities Section */}
+        {destination.activities && destination.activities.length > 0 && (
+          <section id="activities" className="py-16 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-12">
+                <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
+                  {t('thingsToDo')} {displayName}
+                </h2>
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                  {t('experienceBestActivities')}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {destination.activities.map((activity, index) => (
+                  <ActivityCard key={index} activity={activity} index={index} />
+                ))}
+              </div>
             </div>
-            <DestinationGallery images={destination.images} destinationName={displayName} />
+          </section>
+        )}
+
+        {/* Gallery Section */}
+        {destination.images && destination.images.length > 1 && (
+          <section id="gallery" className="py-16 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-12">
+                <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
+                  {t('discover')} {displayName}
+                </h2>
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                  {t('exploreBeauty')}
+                </p>
+              </div>
+              <DestinationGallery images={destination.images} destinationName={displayName} />
+            </div>
+          </section>
+        )}
+
+        {/* Bottom Navigation */}
+        <section className="py-12 bg-gray-50 border-t">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
+              <Link 
+                href={`/${currentLanguage}/destinations`}
+                className="flex items-center gap-3 text-moroccan-blue hover:text-primary-gold transition-colors font-semibold"
+              >
+                <Navigation className="w-5 h-5 rotate-180" />
+                {t('backToDestinations')}
+              </Link>
+              <div className="text-gray-500 text-sm">
+                {t('readyToExplore')}
+              </div>
+            </div>
           </div>
         </section>
-      )}
-
-      {/* Bottom Navigation */}
-      <section className="py-12 bg-gray-50 border-t">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
-            <Link 
-              href="/destinations" 
-              className="flex items-center gap-3 text-moroccan-blue hover:text-primary-gold transition-colors font-semibold"
-            >
-              <Navigation className="w-5 h-5 rotate-180" />
-              {t('backToDestinations')}
-            </Link>
-            <div className="text-gray-500 text-sm">
-              {t('readyToExplore')}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+      </div>
+    );
+  } catch (error) {
+    console.error('Error loading destination page:', error);
+    notFound();
+  }
 }
