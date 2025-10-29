@@ -20,9 +20,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-   experimental: {
-    serverComponentsExternalPackages: ['firebase-admin'],
-  },
+  serverExternalPackages: [], 
    // Add this to bypass the error temporarily
   // output: 'export',
   // trailingSlash: true,
