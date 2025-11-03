@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   images: {
-    domains: ['images.unsplash.com', 'morocompase.com','i.pinimg.com','i.imgur.com'],
+    domains: ['images.unsplash.com', 'morocompase.com','i.pinimg.com','i.imgur.com','https://firebasestorage.googleapis.com'],
   },
  remotePatterns: [
       {

@@ -85,7 +85,7 @@ export default function Hero() {
           >
             {/* Multiple video sources for better compatibility */}
             <source 
-              src="https://cdn.pixabay.com/video/2021/10/22/92837-638016606_large.mp4" 
+              src="/moroccoVibes.mp4" 
               type="video/mp4" 
             />
             {/* Fallback for browsers that don't support video */}
