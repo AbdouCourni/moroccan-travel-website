@@ -43,8 +43,9 @@ export default function InteractiveMoroccoMap({ destinations, places }: Props) {
     const [destinationPlaces, setDestinationPlaces] = useState<Place[]>([]);
     const [loadingPlaces, setLoadingPlaces] = useState<boolean>(false);
     const svgRef = useRef<SVGSVGElement>(null);
-    const fillColormap = "#766eeaff";
+    const fillColormap = "#7037edff";
     const strokeColormap = "#1efe0eff";
+    const basemapColor = "#7037edff";
     const [regions, setRegions] = useState<Region[]>([]);
 
     // Filter destinations that should be shown on map
@@ -242,7 +243,7 @@ export default function InteractiveMoroccoMap({ destinations, places }: Props) {
 
         return (
             <g>
-                <path className="base-map" d={pathDAttributes.basemap} fill="#e8dde1" />
+                <path className="base-map" d={pathDAttributes.basemap} fill={basemapColor} />
                 <path className="region" id="stroke" d={pathDAttributes.stroke} fill={strokeColormap}
                     stroke="#685c5cff"
                     strokeWidth="2" />
