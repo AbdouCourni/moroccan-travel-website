@@ -154,7 +154,7 @@ const mockTransportation = [
     description: 'Comfortable rail service connecting major cities',
     price: 'From $15',
     duration: '3 hours from Casablanca',
-    image: '/images/train-placeholder.jpg'
+    image: 'https://i.imgur.com/0ZiwMT4.png'
   },
   {
     type: 'bus',
@@ -162,7 +162,7 @@ const mockTransportation = [
     description: 'Reliable bus service throughout Morocco',
     price: 'From $10',
     duration: '4 hours from Casablanca',
-    image: '/images/bus-placeholder.jpg'
+    image: 'https://i.imgur.com/1GNiZJ0.png'
   },
   {
     type: 'car_rental',
@@ -170,7 +170,7 @@ const mockTransportation = [
     description: 'Freedom to explore at your own pace',
     price: 'From $25/day',
     duration: 'Flexible',
-    image: '/images/car-placeholder.jpg'
+    image: 'https://i.imgur.com/v0t9HvX.png'
   }
 ];
 
@@ -252,7 +252,7 @@ export default async function DestinationPage({
     // Convert Firebase data to plain objects
     const convertedPlaces = convertFirebaseData(places);
     const convertedDestination = convertDestinationData(destination);
-
+    console.log(' places:', places);
     // Get localized content with fallbacks
     const displayName = getLocalizedText(destination.name, currentLanguage) || destination.name?.en || 'Destination';
     const displayDescription = getLocalizedText(destination.description, currentLanguage) || destination.description?.en || 'Discover this amazing destination';

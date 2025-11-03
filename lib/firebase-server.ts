@@ -414,3 +414,100 @@ export const getRecipesByCategory = async (category: string): Promise<Recipe[]> 
     ...doc.data()
   } as Recipe));
 };
+//________________________________________REgion destinations___________
+// ✅ Get all destinations by region
+export async function getDestinationsByRegion(regionName: string): Promise<Destination[]> {
+  try {
+    const destinationsRef = collection(db, 'destinations');
+    const q = query(destinationsRef, where('region', '==', regionName));
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Destination));
+  } catch (error) {
+    console.error('Error fetching destinations by region:', error);
+    return [];
+  }
+}
+
+// ✅ Get all unique regions from destinations
+export async function getAllRegions(): Promise<string[]> {
+  try {
+    const destinationsRef = collection(db, 'destinations');
+    const snapshot = await getDocs(destinationsRef);
+    
+    const regions = snapshot.docs.map(doc => doc.data().region);
+    return [...new Set(regions)].filter(region => region) as string[];
+  } catch (error) {
+    console.error('Error fetching all regions:', error);
+    return [];
+  }
+}
+
+// ✅ Get region statistics (count and average ranking)
+export async function getRegionStats(): Promise<{region: string, count: number, averageRanking: number}[]> {
+  try {
+    const destinationsRef = collection(db, 'destinations');
+    const snapshot = await getDocs(destinationsRef);
+    
+    const destinations = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Destination));
+
+    const regionMap = new Map<string, {count: number, totalRanking: number}>();
+    
+    destinations.forEach(dest => {
+      if (!dest.region) return;
+      
+      const current = regionMap.get(dest.region) || {count: 0, totalRanking: 0};
+      regionMap.set(dest.region, {
+        count: current.count + 1,
+        totalRanking: current.totalRanking + (dest.ranking || 0)
+      });
+    });
+
+    return Array.from(regionMap.entries()).map(([region, stats]) => ({
+      region,
+      count: stats.count,
+      averageRanking: stats.totalRanking / stats.count
+    }));
+  } catch (error) {
+    console.error('Error fetching region stats:', error);
+    return [];
+  }
+}
+
+// ✅ Get featured destinations by region (highest ranked in each region)
+export async function getFeaturedDestinationsByRegion(limitPerRegion: number = 3): Promise<Destination[]> {
+  try {
+    const destinationsRef = collection(db, 'destinations');
+    const q = query(destinationsRef, orderBy('ranking', 'desc'));
+    const snapshot = await getDocs(q);
+
+    const destinations = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Destination));
+
+    // Group by region and take top N from each
+    const regionMap = new Map<string, Destination[]>();
+    
+    destinations.forEach(dest => {
+      if (!dest.region) return;
+      
+      const regionDests = regionMap.get(dest.region) || [];
+      regionDests.push(dest);
+      regionMap.set(dest.region, regionDests);
+    });
+
+    return Array.from(regionMap.values())
+      .flatMap(regionDests => regionDests.slice(0, limitPerRegion))
+      .sort((a, b) => (b.ranking || 0) - (a.ranking || 0));
+  } catch (error) {
+    console.error('Error fetching featured destinations by region:', error);
+    return [];
+  }
+}

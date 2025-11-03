@@ -119,9 +119,10 @@ export interface Destination {
   activities: string[];
   travelTips: string[];
   featured?: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: any;
+  updatedAt: any;
   ranking : number;
+  showOnMap: boolean;
 }
 
 // types/index.ts
