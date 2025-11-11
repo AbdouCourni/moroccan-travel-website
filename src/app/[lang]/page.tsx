@@ -9,8 +9,10 @@ import { getAllDestinationsByRanking } from '../../../lib/firebase-server';
 import { getFeaturedPlaces } from '../../../lib/firebase-server';
 import { LocalBusinessStructuredData } from '../../../components/seo/StructuredData';
 import InteractMapLoader from '../../../components/InteractMapLoader';
+import PracticeMap from '../../../components/PracticeMap';
+
 import MoroccoRegionsMap from '../../../components/MoroccoRegionsMap';
-import {convertDestinationData} from '../../../lib/firebase-utils';
+import { convertDestinationData } from '../../../lib/firebase-utils';
 
 // Translations moved here from the original page.tsx
 const serverTranslations = {
@@ -66,25 +68,33 @@ export default async function LangHomePage({
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
               {lang === 'en' ? 'Explore Morocco' :
-               lang === 'fr' ? 'Explorez le Maroc' :
-               lang === 'ar' ? 'استكشف المغرب' :
-               'Explora Marruecos'}
+                lang === 'fr' ? 'Explorez le Maroc' :
+                  lang === 'ar' ? 'استكشف المغرب' :
+                    'Explora Marruecos'}
             </h2>
             <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">
               {lang === 'en' ? 'Interactive map showing our curated destinations across beautiful Morocco' :
-               lang === 'fr' ? 'Carte interactive présentant nos destinations sélectionnées à travers le beau Maroc' :
-               lang === 'ar' ? 'خريطة تفاعلية تظهر وجهاتنا المختارة في جميع أنحاء المغرب الجميل' :
-               'Mapa interactivo que muestra nuestros destinos seleccionados en todo el hermoso Marruecos'}
+                lang === 'fr' ? 'Carte interactive présentant nos destinations sélectionnées à travers le beau Maroc' :
+                  lang === 'ar' ? 'خريطة تفاعلية تظهر وجهاتنا المختارة في جميع أنحاء المغرب الجميل' :
+                    'Mapa interactivo que muestra nuestros destinos seleccionados en todo el hermoso Marruecos'}
             </p>
           </div>
-          
-        
-          <div className="h-[900px] rounded-xl overflow-hidden">
-            <InteractMapLoader 
-              destinations={convertedDestinations} 
-              places={featuredPlaces} 
+
+
+          <div className="h-[900px] rounded-xl overflow-hidden hidden md:block">
+            <InteractMapLoader
+              destinations={convertedDestinations}
+              places={featuredPlaces}
             />
           </div>
+
+          {/* Simple mobile placeholder */}
+          <div className="md:hidden bg-amber-100 rounded-xl p-6 text-center">
+            <p className="text-amber-800 font-medium">
+              🗺️ Map available on larger screens
+            </p>
+          </div>
+
         </div>
       </section>
 
@@ -126,7 +136,7 @@ export default async function LangHomePage({
           </div>
         </div>
       </section>
-     
+
     </>
   );
 }

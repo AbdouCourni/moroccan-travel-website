@@ -24,6 +24,7 @@ export interface User {
     responseRate?: number;
     responseTime?: string;
   };
+   favoritesPlaces?: string[]; // place ids the user saved
 }
 export interface Recipe {
   id: string;
@@ -195,6 +196,14 @@ export interface Place {
 //   createdAt: Date;
 //   updatedAt: Date;
 // }
+export interface AuthContextType {
+  user: User | null;
+  signup: (email: string, password: string) => Promise<any>;
+  login: (email: string, password: string) => Promise<any>;
+  googleSignIn: () => Promise<any>;
+  logout: () => Promise<void>;
+  loading?: boolean; // Add loading if needed
+}
 
 export interface Accommodation {
   id: string;
@@ -245,28 +254,38 @@ export interface Accommodation {
   safetyFeatures: string[];
 }
 
+// types/index.ts - Add these interfaces
+
 export interface Review {
   id: string;
+  //placeId: string;
   userId: string;
-  targetType: 'destination' | 'accommodation';
-  targetId: string;
+  targetType: 'destination' | 'place';
+  targetId: string; // placeId in this case
   rating: number;
   title: string;
   content: string;
   images?: string[];
-  createdAt: Date;
-  helpful: number;
+  createdAt?: Date; // Make optional
+  updatedAt?: Date; // Make optional
   user: {
     name: string;
     avatar?: string;
-    country: string;
+    country?: string;
   };
-  aspectRatings?: {
-    cleanliness: number;
-    accuracy: number;
-    communication: number;
-    location: number;
-    value: number;
+  helpful: number;
+  reported: boolean;
+}
+
+export interface ReviewStats {
+  averageRating: number;
+  totalReviews: number;
+  ratingDistribution: {
+    1: number;
+    2: number;
+    3: number;
+    4: number;
+    5: number;
   };
 }
 

@@ -8,6 +8,7 @@
   --moroccan-red: #C1272D;
   --desert-sand: #F8F5F0;
   --dark-charcoal: #2D2D2D;
+   --header-height: 72px; 
 }
 
 @theme inline {

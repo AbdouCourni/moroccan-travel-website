@@ -1,3 +1,4 @@
+// lib/auth.ts
 import { 
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -21,7 +22,17 @@ export const signIn = async (email: string, password: string) => {
     return { user: null, error: error.message };
   }
 };
-
+export const getUserProfile = async (userId: string) => {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    if (userDoc.exists()) {
+      return { userData: userDoc.data(), error: null };
+    }
+    return { userData: null, error: 'User not found' };
+  } catch (error: any) {
+    return { userData: null, error: error.message };
+  }
+};
 // Sign up with email and password
 export const signUp = async (email: string, password: string, name: string) => {
   try {
@@ -40,7 +51,9 @@ export const signUp = async (email: string, password: string, name: string) => {
         language: 'en',
         currency: 'USD'
       },
-      createdAt: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date(), // Assign a default Date object
+      emailVerified: false
     };
 
     await setDoc(doc(db, 'users', user.uid), userData);

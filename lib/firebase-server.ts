@@ -8,10 +8,14 @@ import {
   orderBy,
   doc,
   getDoc,
-  collectionGroup
+  collectionGroup,
+  addDoc,
+  Timestamp,
+  serverTimestamp,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { Destination, Place,Recipe } from '../types';
+import { Destination, Place,Recipe,Review,ReviewStats } from '../types';
 
 // List of top Moroccan destinations for consistent ordering
 const TOP_MOROCCAN_DESTINATIONS = [
@@ -510,4 +514,246 @@ export async function getFeaturedDestinationsByRegion(limitPerRegion: number = 3
     console.error('Error fetching featured destinations by region:', error);
     return [];
   }
+}
+//________________________________________Reviews related queries_______________________________________________
+export async function getReviews(
+  targetType: 'destination' | 'place',
+  targetId: string,
+  limitCount: number = 6
+): Promise<Review[]> {
+  const q = query(
+    collection(db, 'reviews'),
+    where('targetType', '==', targetType),
+    where('targetId', '==', targetId),
+    orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  );
+
+  const snap = await getDocs(q);
+
+  return snap.docs.map((d) => {
+    const data = d.data() as any;
+
+    const toDate = (v: any | undefined) =>
+      v instanceof Timestamp ? v.toDate() : v ? new Date(v) : undefined;
+
+    const review: Review = {
+      id: d.id,
+      targetType: data.targetType,
+      targetId: data.targetId,
+      userId: data.userId,
+      rating: Number(data.rating ?? 0),
+      title: data.title ?? '',
+      content: data.content ?? data.text ?? '',
+      images: Array.isArray(data.images) ? data.images : [],
+      createdAt: toDate(data.createdAt),
+      updatedAt: toDate(data.updatedAt),
+      user: {
+        name: data.user?.name ?? data.userName ?? 'Anonymous',
+        avatar: data.user?.avatar ?? data.userAvatar,
+        country: data.user?.country,
+      },
+      helpful: Number(data.helpful ?? 0),
+      reported: Boolean(data.reported ?? false),
+    };
+
+    return review;
+  });
+}
+
+/**
+ * Compute stats (avg + distribution) for a given target.
+ * Fixes the TS index error by narrowing to 1|2|3|4|5.
+ */
+export async function getReviewStats(
+  targetType: 'destination' | 'place',
+  targetId: string
+): Promise<ReviewStats> {
+  const list = await getReviews(targetType, targetId, 1000);
+
+  const ratings: ReviewStats['ratingDistribution'] = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  };
+
+  let sum = 0;
+
+  for (const r of list) {
+    const rounded = Math.round(Number(r.rating));
+    const clamped = Math.max(1, Math.min(5, rounded)) as 1 | 2 | 3 | 4 | 5;
+    ratings[clamped] = (ratings[clamped] + 1) as number;
+    sum += clamped;
+  }
+
+  const total = list.length;
+  return {
+    averageRating: total ? +(sum / total).toFixed(2) : 0,
+    totalReviews: total,
+    ratingDistribution: ratings,
+  };
+}
+
+/**
+ * Add a review. Use serverTimestamp so your orderBy('createdAt') works reliably.
+ */
+
+
+function tsToDate(v: any): Date | undefined {
+  if (!v) return undefined;
+  if (v instanceof Date) return v;
+  if (v?.toDate) return v.toDate();
+  return new Date(v);
+}
+
+export async function getReviewsByTarget(targetType: 'destination' | 'place', targetId: string): Promise<Review[]> {
+  const qRef = query(
+    collection(db, 'reviews'),
+    where('targetType', '==', targetType),
+    where('targetId', '==', targetId),
+    orderBy('createdAt', 'desc')
+  );
+  const snap = await getDocs(qRef);
+  return snap.docs.map((d) => {
+    const data = d.data() as any;
+    const r: Review = {
+      id: d.id,
+      targetType: data.targetType,
+      targetId: data.targetId,
+     // placeId: data.placeId, // tolerated if still in DB, not used
+      userId: data.userId,
+      rating: data.rating,
+      title: data.title ?? '',
+      content: data.content ?? data.text ?? '',
+      images: Array.isArray(data.images) ? data.images : [],
+      createdAt: tsToDate(data.createdAt),
+      updatedAt: tsToDate(data.updatedAt),
+      user: {
+        name: data.user?.name ?? data.userName ?? 'Anonymous',
+        avatar: data.user?.avatar,
+        country: data.user?.country,
+      },
+      helpful: data.helpful ?? 0,
+      reported: data.reported ?? false,
+    };
+    return r;
+  });
+}
+
+export async function getReviewStatsByTarget(targetType: 'destination' | 'place', targetId: string): Promise<ReviewStats> {
+  const list = await getReviewsByTarget(targetType, targetId);
+  const total = list.length;
+  const dist: Record<1 | 2 | 3 | 4 | 5, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  let sum = 0;
+
+  for (const r of list) {
+    const clamped = Math.max(1, Math.min(5, Math.round(r.rating))) as 1 | 2 | 3 | 4 | 5;
+    dist[clamped] = dist[clamped] + 1;
+    sum += clamped;
+  }
+
+  return {
+    averageRating: total ? +(sum / total).toFixed(2) : 0,
+    totalReviews: total,
+    ratingDistribution: dist,
+  };
+}
+
+/**
+ * Enforce: one review per user per target within last 365 days.
+ * Throws { code: 'ALREADY_REVIEWED_THIS_YEAR' } if blocked.
+ */
+export async function addReview(input: Omit<Review, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  // check duplicates in last 365 days
+  const cutoff = new Date();
+  cutoff.setFullYear(cutoff.getFullYear() - 1);
+
+  const dupQ = query(
+    collection(db, 'reviews'),
+    where('targetType', '==', input.targetType),
+    where('targetId', '==', input.targetId),
+    where('userId', '==', input.userId),
+    where('createdAt', '>=', Timestamp.fromDate(cutoff))
+  );
+  const dupSnap = await getDocs(dupQ);
+  if (!dupSnap.empty) {
+    const err: any = new Error('Already reviewed within a year');
+    err.code = 'ALREADY_REVIEWED_THIS_YEAR';
+    throw err;
+  }
+
+  const now = serverTimestamp();
+  const docRef = await addDoc(collection(db, 'reviews'), {
+    ...input,
+    // keep legacy shape tolerant (if something still reads placeId)
+    placeId: input.targetId,
+    createdAt: now,
+    updatedAt: now,
+  });
+  return docRef.id;
+}
+
+export async function deleteReview(reviewId: string): Promise<void> {
+  // Security rules will enforce ownership (request.auth.uid == resource.data.userId)
+  const ref = doc(db, 'reviews', reviewId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return;
+  await deleteDoc(ref);
+}
+
+/** Backward-compat helpers you already call from the page (optional) */
+//export const getPlaceReviews = (targetId: string) => getReviewsByTarget('place', targetId);
+//export const getPlaceReviewStats = (targetId: string) => getReviewStatsByTarget('place', targetId);
+export async function getPlaceReviews(targetId: string, limitCount = 6): Promise<Review[]> {
+  const qy = query(
+    collection(db, 'reviews'),
+    where('targetType', '==', 'place'),
+    where('targetId', '==', targetId),
+    orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  );
+  const snap = await getDocs(qy);
+  return snap.docs.map(d => {
+    const data = d.data() as any;
+    return {
+      id: d.id,
+      targetType: data.targetType,
+      targetId: data.targetId,
+      userId: data.userId,
+      rating: data.rating,
+      title: data.title ?? '',
+      content: data.content ?? '',
+      images: Array.isArray(data.images) ? data.images : [],
+      createdAt: data.createdAt?.toDate?.() ?? new Date(data.createdAt),
+      updatedAt: data.updatedAt?.toDate?.() ?? new Date(data.updatedAt),
+      user: {
+        name: data.user?.name ?? data.userName ?? 'Anonymous',
+        avatar: data.user?.avatar,
+        country: data.user?.country,
+      },
+      helpful: data.helpful ?? 0,
+      reported: !!data.reported,
+    } as Review;
+  });
+}
+export async function getPlaceReviewStats(targetId: string) {
+  const list = await getPlaceReviews(targetId);
+  const total = list.length;
+
+  let ratings: ReviewStats['ratingDistribution'] = { 1:0, 2:0, 3:0, 4:0, 5:0 };
+  let sum = 0;
+
+  for (const r of list) {
+    const key = Math.max(1, Math.min(5, Math.round(r.rating))) as 1|2|3|4|5;
+    ratings[key] = ratings[key] + 1;
+    sum += key;
+  }
+
+  return {
+    averageRating: total ? +(sum / total).toFixed(2) : 0,
+    totalReviews: total,
+    ratingDistribution: ratings,
+  };
 }

@@ -8,6 +8,16 @@ import { convertFirebaseData } from '../../../../../../../lib/firebase-utils';
 import { LocationShare } from '../../../../../../../components/LocationShare';
 import { Metadata } from 'next';
 import { PlaceStructuredData } from '../../../../../../../components/seo/StructuredData';
+import ReviewsSection from '../../../../../../../components/PlaceReviews';
+import { getReviews, getReviewStats } from '../../../../../../../lib/firebase-server';
+import FavoriteShareBar from '../../../../../../../components/FavoriteShareBar';
+import PlaceGallery from "../../../../../../../components/PlaceGallery";
+
+
+
+//import { getPlaceReviews, getPlaceReviewStats } from '@/app/api/reviews/route';
+
+
 
 interface PlacePageProps {
   params: {
@@ -22,7 +32,7 @@ export async function generateMetadata({ params }: PlacePageProps): Promise<Meta
 
   try {
     const destination = await getDestinationBySlug(slug);
-    
+
     if (!destination) {
       return {
         title: 'Destination Not Found',
@@ -31,7 +41,7 @@ export async function generateMetadata({ params }: PlacePageProps): Promise<Meta
     }
 
     const place = await getPlaceById(destination.id, placeId);
-    
+
     if (!place) {
       return {
         title: 'Place Not Found',
@@ -74,6 +84,10 @@ export async function generateMetadata({ params }: PlacePageProps): Promise<Meta
 export default async function PlacePage({ params }: PlacePageProps) {
   const { slug, placeId } = params;
 
+  const [testReviews, testReviewStats] = await Promise.all([
+    getReviews('place', placeId, 6),
+    getReviewStats('place', placeId)
+  ]);
   try {
     // Get destination to verify it exists
     const destination = await getDestinationBySlug(slug);
@@ -183,16 +197,16 @@ export default async function PlacePage({ params }: PlacePageProps) {
         {/* Quick Facts Bar */}
         <section className="bg-gray-50 border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="py-6 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-6">
-                {convertedPlace.rating && (
-                  <div className="flex items-center gap-2">
-                    <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                    <span className="font-semibold text-gray-800">{convertedPlace.rating.toFixed(1)}</span>
-                    <span className="text-gray-600">({convertedPlace.reviewCount || 0} reviews)</span>
-                  </div>
-                )}
+            {/* Stats + Save + Share */}
+            <FavoriteShareBar
+              placeId={placeId}
+              stats={testReviewStats}
+              placeUrl={`https://morocompase.com/destinations/${slug}/places/${placeId}`}
+            />
 
+            {/* Keep any extra quick-facts you already show (duration, entrance fee, etc.) */}
+            <div className="pb-6 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-6">
                 {convertedPlace.duration && (
                   <div className="flex items-center gap-2">
                     <Clock className="w-5 h-5 text-gray-600" />
@@ -203,22 +217,12 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 {convertedPlace.entranceFee && (
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-gray-800">
-                      {convertedPlace.entranceFee.tourist || convertedPlace.entranceFee.local} {convertedPlace.entranceFee.currency}
+                      {convertedPlace.entranceFee.tourist || convertedPlace.entranceFee.local}{' '}
+                      {convertedPlace.entranceFee.currency}
                     </span>
                     <span className="text-gray-600">entrance fee</span>
                   </div>
                 )}
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-primary-gold text-gray-700 hover:text-primary-gold transition-colors">
-                  <Heart className="w-4 h-4" />
-                  Save
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors">
-                  <Share2 className="w-4 h-4" />
-                  Share
-                </button>
               </div>
             </div>
           </div>
@@ -236,22 +240,12 @@ export default async function PlacePage({ params }: PlacePageProps) {
                   <p className="text-gray-700 text-lg leading-relaxed">{displayDescription}</p>
                 </div>
 
-                {/* Image Gallery */}
-                {convertedPlace.images && convertedPlace.images.length > 1 && (
-                  <div className="mb-8">
-                    <h3 className="font-amiri text-2xl font-bold text-gray-900 mb-4">Gallery</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {convertedPlace.images.slice(1).map((image: string, index: number) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`${displayName} ${index + 2}`}
-                          className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
+               {convertedPlace.images && convertedPlace.images.length > 1 && (
+  <div className="mb-8">
+    <h3 className="font-amiri text-2xl font-bold text-gray-900 mb-4">Gallery</h3>
+    <PlaceGallery images={convertedPlace.images} displayName={displayName} />
+  </div>
+)}
 
                 {/* Tips */}
                 {convertedPlace.tips && convertedPlace.tips.length > 0 && (
@@ -353,7 +347,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 )}
 
                 {/* Location Map */}
-                <div className="bg-gray-50 rounded-2xl p-6">
+                {/* <div className="bg-gray-50 rounded-2xl p-6">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3">
                     <h3 className="font-amiri text-xl font-bold text-gray-900">
                       Location
@@ -387,12 +381,29 @@ export default async function PlacePage({ params }: PlacePageProps) {
                       </div>
                     </div>
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
         </section>
+
+        <section className="border-t border-gray-200">
+
+          <section className="border-t border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+              {/* Server component for reviews */}
+              <ReviewsSection
+                targetType="place"
+                targetId={placeId}
+                placeName={displayName}
+                initialReviews={testReviews}
+                reviewStats={testReviewStats}
+              />
+            </div>
+          </section>
+        </section>
       </div>
+
     );
   } catch (error) {
     console.error('Error loading place page:', error);

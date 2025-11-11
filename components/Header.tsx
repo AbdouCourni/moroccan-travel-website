@@ -5,71 +5,68 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import logo from '../src/logo.png';
-// Import useRouter and usePathname
 import { usePathname, useRouter } from 'next/navigation'; 
-import { auth } from '../lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { useAuth } from '../contexts/AuthContext'; // ← Use your AuthContext
 import UserMenu from './Auth/UserMenu';
 import LoginForm from './Auth/LoginForm';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLanguage, type Language } from '../contexts/LanguageContext';
 
 export default function Header() {
-  // ... (state declarations remain the same)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const [isMobile, setIsMobile] = useState(false);
   
   const { language, setLanguage, t } = useLanguage();
   const pathname = usePathname();
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
+  
+  // ✅ FIX: Use your AuthContext instead of separate user state
+  const { user, loading: authLoading } = useAuth();
 
   // Helper function to get the base path (without /lang segment)
   const basepath = useMemo(() => {
-    const parts = pathname.split('/').filter(Boolean); // filter(Boolean) removes empty strings from initial '/'
-    
-    // Check if the first segment is one of your supported language codes
+    const parts = pathname.split('/').filter(Boolean);
     if (['en', 'fr', 'ar', 'es'].includes(parts[0])) {
-      // Path is /lang/segment -> return the rest, joined back with a leading '/'
       return '/' + parts.slice(1).join('/');
     }
-    // Path is /segment (or / if parts is empty) -> return the whole pathname
     return pathname;
   }, [pathname]);
 
-  // ... (useEffect for auth and mobile check remains the same)
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-  // FIX: This function now navigates to the new URL path
+  // ✅ REMOVE: Delete this entire useEffect - we don't need separate auth state
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
+  //     setUser(user);
+  //   });
+  //   return unsubscribe;
+  // }, []);
+
   const handleLanguageChange = async (newLanguage: Language) => {
-    
-    // Determine the language-agnostic path (e.g., '/destinations' or just '/')
     const currentBasepath = basepath || '/'; 
-
     let newPath = '';
 
     if (newLanguage === 'en' && currentBasepath === '/') {
-      // Root English is generally just '/'
       newPath = '/';
     } else if (newLanguage === 'en') {
-        // English path for segments: e.g., /destinations
-        newPath = currentBasepath; 
+      newPath = currentBasepath; 
     } else if (currentBasepath === '/') {
-        // Other language root: e.g., /fr
-        newPath = `/${newLanguage}`;
+      newPath = `/${newLanguage}`;
     } else {
-        // Localized path: e.g., /fr/destinations
-        newPath = `/${newLanguage}${currentBasepath}`;
+      newPath = `/${newLanguage}${currentBasepath}`;
     }
 
-    // 1. Perform client-side navigation to the new URL path
     router.push(newPath);
-    
-    // 2. Update client context (optional but good for instant header text update)
     setLanguage(newLanguage);
   };
   
-  // Rework isActive to check against the language-agnostic path
   const isActive = (href: string) => {
     const currentBase = basepath || '/';
     if (href === '/') return currentBase === '/';
@@ -78,23 +75,19 @@ export default function Header() {
 
   const handleLinkClick = () => setIsMenuOpen(false);
 
-  // Nav items need the language path segment
   const navItems = [
-    { name: t('home'), href: '' }, // Use empty string for root segment
+    { name: t('home'), href: '' },
     { name: t('destinations'), href: 'destinations' },
     { name: t('stays'), href: 'stays' },
     { name: t('transport'), href: 'transport' },
     { name: t('culture'), href: 'culture' },
   ];
   
-  // Helper to generate correct localized link URL
   const getLocalizedHref = (segment: string) => {
-      // If language is 'en', the segment might be the default URL (like '/destinations')
-      if (language === 'en') {
-          return segment ? `/${segment}` : '/';
-      }
-      // If language is not 'en', always prepend /lang
-      return segment ? `/${language}/${segment}` : `/${language}`;
+    if (language === 'en') {
+      return segment ? `/${segment}` : '/';
+    }
+    return segment ? `/${language}/${segment}` : `/${language}`;
   };
 
   return (
@@ -103,34 +96,33 @@ export default function Header() {
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             
-           {/* Logo and Title - links to the current language home */}
-<Link href={getLocalizedHref('')} className="flex items-center" onClick={handleLinkClick}>
-  <Image 
-    src={logo} 
-    alt="MoroCompase logo" 
-    width={40}  // Add specific width
-    height={40} // Add specific height
-    className="w-8 h-8 md:w-10 md:h-10" // Responsive sizing
-    priority
-  />
-  <span className={`font-amiri font-bold text-primary-gold ${
-    isMobile ? 'text-xl' : 'text-2xl'
-  }`}>
-    MoroCompase
-  </span>
-</Link>
+            {/* Logo and Title */}
+            <Link href={getLocalizedHref('')} className="flex items-center" onClick={handleLinkClick}>
+              <Image 
+                src={logo} 
+                alt="MoroCompase logo" 
+                width={40}
+                height={40}
+                className="w-8 h-8 md:w-10 md:h-10"
+                priority
+              />
+              <span className={`font-amiri font-bold text-primary-gold ${
+                isMobile ? 'text-xl' : 'text-2xl'
+              }`}>
+                MoroCompase
+              </span>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-3 lg:space-x-4">
               {navItems.map((item) => {
                 const localizedHref = getLocalizedHref(item.href);
-                // We use the language-agnostic path (item.href) for isActive check against basepath
                 const active = isActive(item.href ? `/${item.href}` : '/'); 
                 
                 return (
                   <Link
                     key={item.href}
-                    href={localizedHref} // Use the correct localized link
+                    href={localizedHref}
                     className={`transition-all duration-300 font-medium px-3 lg:px-4 py-2 rounded-lg ${
                       active
                         ? 'text-black bg-amber-50 font-semibold shadow-sm border border-amber-200'
@@ -146,10 +138,11 @@ export default function Header() {
               <div className="ml-2">
                 <LanguageSwitcher 
                   currentLanguage={language} 
-                  onLanguageChange={handleLanguageChange} // This is the fixed function
+                  onLanguageChange={handleLanguageChange}
                 />
               </div>
               
+              {/* ✅ FIX: Use user from AuthContext */}
               {user ? (
                 <UserMenu user={user} />
               ) : (
@@ -173,6 +166,7 @@ export default function Header() {
                 />
               </div>
 
+              {/* ✅ FIX: Use user from AuthContext */}
               {user ? (
                 <UserMenu user={user} mobile />
               ) : (
