@@ -347,7 +347,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 )}
 
                 {/* Location Map */}
-                {/* <div className="bg-gray-50 rounded-2xl p-6">
+                <div className="bg-gray-50 rounded-2xl p-6">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3">
                     <h3 className="font-amiri text-xl font-bold text-gray-900">
                       Location
@@ -381,7 +381,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
                       </div>
                     </div>
                   )}
-                </div> */}
+                </div>
               </div>
             </div>
           </div>

@@ -43,9 +43,9 @@ export default function InteractiveMoroccoMap({ destinations, places }: Props) {
     const [destinationPlaces, setDestinationPlaces] = useState<Place[]>([]);
     const [loadingPlaces, setLoadingPlaces] = useState<boolean>(false);
     const svgRef = useRef<SVGSVGElement>(null);
-    const fillColormap = "#7037edff";
-    const strokeColormap = "#1efe0eff";
-    const basemapColor = "#7037edff";
+    const fillColormap = "#1efe0eff";
+    const strokeColormap = "#fc1616ff";
+    const basemapColor = "#1efe0eff";
     const [regions, setRegions] = useState<Region[]>([]);
 
     // Filter destinations that should be shown on map
@@ -216,7 +216,7 @@ export default function InteractiveMoroccoMap({ destinations, places }: Props) {
     }, [regions, selectedRegion, hoveredRegion, fillColormap]);
 
     const getViewBox = () => {
-        if (viewState === 'region' && selectedRegion?.viewBox) {
+        if ((viewState === 'region' || viewState === 'destination') && selectedRegion?.viewBox) {
             return selectedRegion.viewBox;
         }
         return "0 0 1282 1299";
@@ -329,7 +329,7 @@ export default function InteractiveMoroccoMap({ destinations, places }: Props) {
                                 className="w-full h-auto transition-all duration-500"
                                 style={{
                                     maxHeight: '600px',
-                                    transform: viewState === 'region' ? `scale(${zoomLevel})` : 'scale(1)',
+                                    transform: (viewState === 'region' || viewState === 'destination') ? `scale(${zoomLevel})` : 'scale(1)',
                                     transformOrigin: 'center'
                                 }}
                                 xmlns="http://www.w3.org/2000/svg"
