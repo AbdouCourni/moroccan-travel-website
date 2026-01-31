@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { Sparkles } from 'lucide-react'; // You'll need to install lucide-react if not already
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -115,29 +116,42 @@ export default function Hero() {
         )}
       </div>
 
-      {/* Hero Content */}
-      <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-        <h1 className="font-amiri text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6">
-          Discover Morocco
-        </h1>
-        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-6 sm:mb-8 leading-relaxed max-w-3xl mx-auto px-2">
-          From the Atlas Mountains to the Sahara Desert, experience the magic of Morocco&apos;s rich culture
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
-          <Link 
-            href="/destinations" 
-            className="btn-primary text-center text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 min-w-[200px] sm:min-w-0"
-          >
-            Explore Destinations
-          </Link>
-          <Link 
-            href="/stays" 
-            className="btn-secondary text-center text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 min-w-[200px] sm:min-w-0"
-          >
-            Find Stays
-          </Link>
-        </div>
-      </div>
+    {/* Hero Content */}
+<div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
+  <h1 className="font-amiri text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6">
+    Discover Morocco
+  </h1>
+  <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-6 sm:mb-8 leading-relaxed max-w-3xl mx-auto px-2">
+    From the Atlas Mountains to the Sahara Desert, experience the magic of Morocco&apos;s rich culture
+  </p>
+  
+  {/* Main Button Row */}
+  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-4">
+    <Link 
+      href="/destinations" 
+      className="btn-primary text-center text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 min-w-[200px] sm:min-w-0"
+    >
+      Explore Destinations
+    </Link>
+    <Link 
+      href="/stays" 
+      className="btn-secondary text-center text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 min-w-[200px] sm:min-w-0"
+    >
+      Find Stays
+    </Link>
+  </div>
+
+  {/* AI Button Below */}
+  <div className="mt-4">
+    <Link 
+      href="/ai-trip-planner" 
+      className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-center text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
+    >
+      <Sparkles className="w-5 h-5" />
+      Let AI Plan My Trip
+    </Link>
+  </div>
+</div>
 
       {/* Scroll Indicator */}
       <div className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-10">
