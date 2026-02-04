@@ -1,6 +1,6 @@
 // app/destinations/page.tsx (Server Component)
 import DestinationsClientPage from './DestinationsClientPage';
-import { getAllDestinationsByRanking } from '../../../../lib/firebase-server';
+import { getAllDestinationsByRanking,getAllDestinations } from '../../../../lib/firebase-server';
 
 // Helper function to convert Firebase timestamps
 function convertFirebaseTimestamps(destinations: any[]) {
@@ -24,7 +24,7 @@ function convertFirebaseTimestamps(destinations: any[]) {
 
 export default async function DestinationsPage() {
   try {
-    const destinations = await getAllDestinationsByRanking();
+    const destinations = await getAllDestinations();
     
     // Convert Firebase timestamps to plain objects before passing to client
     const serializedDestinations = convertFirebaseTimestamps(destinations);

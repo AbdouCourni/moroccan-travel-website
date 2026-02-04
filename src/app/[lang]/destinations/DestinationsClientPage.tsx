@@ -88,6 +88,7 @@ export default function DestinationsClientPage({ initialDestinations }: Destinat
       const region = destination.region || 'Unknown';
       stats[region] = (stats[region] || 0) + 1;
     });
+    console.log('Region Stats:', stats);
     return stats;
   }, [destinations]);
 
@@ -162,7 +163,7 @@ export default function DestinationsClientPage({ initialDestinations }: Destinat
             <div className="flex flex-wrap items-center gap-2">
               <Filter className="w-4 h-4 text-gray-500" />
               <span className="text-gray-700 font-medium mr-2">Filter by:</span>
-              {regions.slice(0, 8).map(region => (
+              {regions.slice(0, 12).map(region => (
                 <button
                   key={region}
                   onClick={() => setSelectedRegion(region)}
