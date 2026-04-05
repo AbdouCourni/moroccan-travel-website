@@ -14,6 +14,8 @@ import PracticeMap from '../../../components/PracticeMap';
 import MoroccoRegionsMap from '../../../components/MoroccoRegionsMap';
 import { convertDestinationData } from '../../../lib/firebase-utils';
 
+
+
 // Translations moved here from the original page.tsx
 const serverTranslations = {
   en: {
@@ -37,6 +39,110 @@ const serverTranslations = {
     exploreAll: 'Explorar Todos los Destinos'
   }
 } as const; // Use 'as const' for strong typing
+
+
+// Add this to src/app/[lang]/page.tsx - place it before your LangHomePage component
+export async function generateMetadata({ params }: { params: { lang: string } }) {
+  const lang = params.lang;
+  
+  // Language-specific content
+  const titles = {
+    en: "Discover Morocco's Hidden Gems - Authentic Travel Experiences | MoroCompase",
+    fr: "Découvrez les Joyaux Cachés du Maroc - Voyages Authentiques | MoroCompase",
+    ar: "اكتشف جواهر المغرب الخفية - تجارب سفر أصيلة | موروكومباس",
+    es: "Descubre las Joyas Ocultas de Marruecos - Experiencias Auténticas | MoroCompase"
+  };
+  
+  const descriptions = {
+    en: "Explore Morocco with local experts. Discover Marrakech, Fez, Sahara Desert tours, authentic riads, and hidden cultural gems. Your complete Morocco travel guide.",
+    fr: "Explorez le Maroc avec des experts locaux. Découvrez Marrakech, Fès, les circuits dans le désert du Sahara, les riads authentiques et les pépites culturelles cachées. Votre guide de voyage complet pour le Maroc.",
+    ar: "استكشف المغرب مع خبراء محليين. اكتشف مراكش وفاس وجولات الصحراء الكبرى والرياض الأصيلة والكنوز الثقافية المخفية. دليلك الكامل للسفر إلى المغرب.",
+    es: "Explora Marruecos con expertos locales. Descubre Marrakech, Fez, tours por el desierto del Sahara, riads auténticos y joyas culturales escondidas. Tu guía de viaje completa para Marruecos."
+  };
+  
+  const keywords = {
+    en: ["Morocco travel", "Marrakech guide", "Sahara Desert tours", "Fez medina", "Moroccan riads", "local experiences", "Morocco tourism", "best time to visit Morocco", "Morocco travel packages", "discover Morocco"],
+    fr: ["voyage Maroc", "guide Marrakech", "circuits désert Sahara", "médina Fès", "riads marocains", "expériences locales", "tourisme Maroc", "meilleure période pour visiter Maroc", "forfaits voyage Maroc"],
+    ar: ["السفر إلى المغرب", "دليل مراكش", "جولات الصحراء الكبرى", "فاس المدينة", "رياض مغربية", "تجارب محلية", "السياحة في المغرب", "أفضل وقت لزيارة المغرب", "باقات السفر إلى المغرب"],
+    es: ["viajes Marruecos", "guía Marrakech", "tours desierto Sahara", "medina Fez", "riads marroquíes", "experiencias locales", "turismo Marruecos", "mejor época para visitar Marruecos", "paquetes de viaje Marruecos"]
+  };
+  
+  const baseUrl = 'https://morocompase.com';
+  
+  return {
+    title: titles[lang as keyof typeof titles] || titles.en,
+    description: descriptions[lang as keyof typeof descriptions] || descriptions.en,
+    keywords: keywords[lang as keyof typeof keywords] || keywords.en,
+    
+    // Open Graph tags (for social media sharing)
+    openGraph: {
+      title: titles[lang as keyof typeof titles] || titles.en,
+      description: descriptions[lang as keyof typeof descriptions] || descriptions.en,
+      type: 'website',
+      url: `${baseUrl}/${lang}`,
+      images: [
+        {
+          url: '/og-home.jpeg',
+          width: 1200,
+          height: 630,
+          alt: `MoroCompase - ${titles[lang as keyof typeof titles] || titles.en}`,
+        },
+      ],
+      siteName: 'MoroCompase',
+      locale: lang === 'ar' ? 'ar_MA' : lang === 'fr' ? 'fr_FR' : lang === 'es' ? 'es_ES' : 'en_US',
+      alternateLocale: ['en_US', 'fr_FR', 'ar_MA', 'es_ES'],
+    },
+    
+    // Twitter Card tags
+    twitter: {
+      card: 'summary_large_image',
+      title: titles[lang as keyof typeof titles] || titles.en,
+      description: descriptions[lang as keyof typeof descriptions] || descriptions.en,
+      images: ['/twitter-home.jpeg'],
+      site: '@morocompase',
+      creator: '@morocompase',
+    },
+    
+    // Canonical URL (tells Google which URL is the master copy)
+    alternates: {
+      canonical: `${baseUrl}/${lang}`,
+      languages: {
+        'en': `${baseUrl}/en`,
+        'fr': `${baseUrl}/fr`,
+        'ar': `${baseUrl}/ar`,
+        'es': `${baseUrl}/es`,
+        'x-default': `${baseUrl}/en`,
+      },
+    },
+    
+    // Other metadata
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+    
+    verification: {
+      // Add your Google Search Console verification code here if you have one
+      // google: 'your-verification-code',
+    },
+    
+    category: 'travel',
+    
+    // Viewport settings (optional but good for mobile)
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+      maximumScale: 5,
+    },
+  };
+}
 
 type lang = 'en' | 'fr' | 'ar' | 'es';
 

@@ -120,8 +120,8 @@ export default async function RootLayout({
     <html lang={language}>
       <head>
         {/* hreflang tags for multilingual SEO */}
-        <link rel="alternate" href="https://morocompase.com" hrefLang="x-default" />
-        <link rel="alternate" href="https://morocompase.com" hrefLang="en" />
+        {/* <link rel="alternate" href="https://morocompase.com" hrefLang="x-default" /> */}
+        {/* <link rel="alternate" href="https://morocompase.com" hrefLang="en" /> */}
         <link rel="alternate" href="https://morocompase.com/fr" hrefLang="fr" />
         <link rel="alternate" href="https://morocompase.com/ar" hrefLang="ar" />
         <link rel="alternate" href="https://morocompase.com/es" hrefLang="es" />
@@ -132,7 +132,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://maps.googleapis.com" />
         
         {/* Canonical URL for homepage */}
-        <link rel="canonical" href="https://morocompase.com" />
+        {/* <link rel="canonical" href="https://morocompase.com" /> */}
       </head>
       <body className={inter.className}>
         {/* Load Google Maps JS API so client Map components can use window.google */}
