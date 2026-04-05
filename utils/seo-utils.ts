@@ -1,3 +1,4 @@
+//utils/seo-utils.ts
 import { SEOConfig } from '../types/seo';
 import { Destination, Place } from '../types/index';
 

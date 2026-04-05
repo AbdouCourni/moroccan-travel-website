@@ -44,7 +44,7 @@ export function Map({ coordinates, zoom =8,className = "h-48" }: MapProps) {
     const map = new window.google.maps.Map(mapRef.current, {
       center: { lat: coordinates.lat, lng: coordinates.lng },
       zoom: zoom,
-      styles: MAP_STYLE,
+      //styles: MAP_STYLE,
       // Show more default UI elements for better usability
       disableDefaultUI: false, // Keep default UI
       zoomControl: true,

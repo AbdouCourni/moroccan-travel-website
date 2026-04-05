@@ -81,7 +81,7 @@ export function MapWithPlaces({ places, className = "h-96",destinationSlug }: Ma
     const map = new window.google.maps.Map(mapRef.current, {
       center: bounds.getCenter(),
       zoom: 12,
-      styles: whatsappStyle,
+     // styles: whatsappStyle,
       disableDefaultUI: false,
       zoomControl: true,
       mapTypeControl: false,

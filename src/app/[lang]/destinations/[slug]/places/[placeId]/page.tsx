@@ -242,7 +242,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
 
                {convertedPlace.images && convertedPlace.images.length > 1 && (
   <div className="mb-8">
-    <h3 className="font-amiri text-2xl font-bold text-gray-900 mb-4">Gallery</h3>
+    
     <PlaceGallery images={convertedPlace.images} displayName={displayName} />
   </div>
 )}
