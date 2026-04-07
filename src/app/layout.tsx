@@ -172,12 +172,10 @@ export default async function RootLayout({
         />
         
         
-          <AuthProvider>
-            {/* <Header /> */}
-            <main>{children}</main>
-            <GoogleAnalyticsWrapper />
-            {/* <Footer/> */}
-          </AuthProvider>
+         <AuthProvider>
+  {children}  {/* Just children, no <main> */}
+  <GoogleAnalyticsWrapper />
+</AuthProvider>
         
       </body>
     </html>

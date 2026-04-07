@@ -1,46 +1,40 @@
 // src/app/sitemap.ts
 import { MetadataRoute } from 'next';
 
+const baseUrl = 'https://morocompase.com';
+const languages = ['en', 'fr', 'ar', 'es'];
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://morocompase.com';
+  const sitemapEntries: MetadataRoute.Sitemap = [];
   
-  return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/destinations`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/recipes`,
+  for (const lang of languages) {
+    // Homepage for each language
+    sitemapEntries.push({
+      url: `${baseUrl}/${lang}`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/culture`,
+      priority: 1.0,
+    });
+    
+    // Discover Morocco page
+    sitemapEntries.push({
+      url: `${baseUrl}/${lang}/discover-morocco`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/stays`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/transport`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    // Add more static routes as needed
-  ];
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    });
+    
+    // Main sections
+    const sections = ['destinations', 'recipes', 'culture', 'stays', 'transport'];
+    for (const section of sections) {
+      sitemapEntries.push({
+        url: `${baseUrl}/${lang}/${section}`,
+        lastModified: new Date(),
+        changeFrequency: section === 'recipes' ? 'weekly' : 'monthly',
+        priority: 0.8,
+      });
+    }
+  }
+  
+  return sitemapEntries;
 }

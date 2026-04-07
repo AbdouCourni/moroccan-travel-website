@@ -125,7 +125,7 @@ export default function Header() {
                     href={localizedHref}
                     className={`transition-all duration-300 font-medium px-3 lg:px-4 py-2 rounded-lg ${
                       active
-                        ? 'text-black bg-green-300 font-semibold shadow-sm border border-green-200'
+                        ? 'text-black bg-green-500 font-semibold shadow-sm border border-green-200'
                         : 'text-gray-700 hover:text-primary-gold hover:bg-gray-50'
                     }`}
                   >

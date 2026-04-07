@@ -13,6 +13,7 @@ import PracticeMap from '../../../components/PracticeMap';
 
 import MoroccoRegionsMap from '../../../components/MoroccoRegionsMap';
 import { convertDestinationData } from '../../../lib/firebase-utils';
+import { Link } from 'lucide-react';
 
 
 
@@ -168,6 +169,14 @@ export default async function LangHomePage({
     <>
       <LocalBusinessStructuredData />
       <Hero />
+      {/* <div className="container mx-auto px-4 py-8 flex justify-center">
+     <Link 
+  href="/en/discover-morocco"
+  style={{ backgroundColor: 'red', color: 'white', padding: '10px', display: 'inline-block' }}
+>
+  Discover Morocco (Test)
+</Link>
+  </div> */}
       {/* Interactive Map Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">

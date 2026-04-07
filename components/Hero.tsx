@@ -139,6 +139,12 @@ export default function Hero() {
     >
       Find Stays
     </Link>
+    {/* <Link 
+      href={`/en/discover-morocco`}
+      className="btn bg-green-500 hover:bg-green-600 text-center text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 min-w-[200px] sm:min-w-0"
+    >
+      Discover Morocco
+    </Link> */}
   </div>
 
   {/* AI Button Below */}
