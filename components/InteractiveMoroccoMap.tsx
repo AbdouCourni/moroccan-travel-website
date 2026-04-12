@@ -704,6 +704,7 @@ const getDestinationCoordinates = (slug: string): { x: number; y: number } => {
         'taourirt': { x: 1130, y: 165 },
         'jerada': { x: 1175, y: 180 },
         'guercif': { x: 1110, y: 195 },
+        'saidia': { x: 1170, y: 120 },
 
         // Rabat-Salé-Kenitra (8)
         'rabat': { x: 855, y: 215 },

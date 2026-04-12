@@ -12,8 +12,9 @@ import InteractMapLoader from '../../../components/InteractMapLoader';
 import PracticeMap from '../../../components/PracticeMap';
 
 import MoroccoRegionsMap from '../../../components/MoroccoRegionsMap';
-import { convertDestinationData } from '../../../lib/firebase-utils';
+import { convertDestinationData,serializeFirebaseData } from '../../../lib/firebase-utils';
 import { Link } from 'lucide-react';
+import QuickExplore from '../../../components/QuickExplore';
 
 
 
@@ -163,20 +164,14 @@ export default async function LangHomePage({
   const destinations = await getAllDestinationsByRanking('desc');
   const featuredPlaces = await getFeaturedPlaces('nador', 3); // You'll need to implement this based on your data structure
   const t = serverTranslations[lang];
-  const convertedDestinations = destinations.map(convertDestinationData);
+  const convertedDestinations = destinations.map(serializeFirebaseData);
+  const convertedFeaturedPlaces = featuredPlaces.map(serializeFirebaseData);
 
   return (
     <>
       <LocalBusinessStructuredData />
       <Hero />
-      {/* <div className="container mx-auto px-4 py-8 flex justify-center">
-     <Link 
-  href="/en/discover-morocco"
-  style={{ backgroundColor: 'red', color: 'white', padding: '10px', display: 'inline-block' }}
->
-  Discover Morocco (Test)
-</Link>
-  </div> */}
+      {/* <QuickExplore lang={lang} /> */}
       {/* Interactive Map Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -197,9 +192,10 @@ export default async function LangHomePage({
 
 
           <div className="h-[900px] rounded-xl overflow-hidden hidden md:block">
+        
             <InteractMapLoader
               destinations={convertedDestinations}
-              places={featuredPlaces}
+              places={convertedFeaturedPlaces}
             />
           </div>
 

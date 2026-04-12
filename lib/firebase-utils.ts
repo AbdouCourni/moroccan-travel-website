@@ -37,14 +37,37 @@ export function convertDestinationData(destination: any) {
   const converted = convertFirebaseData(destination);
   
   // Ensure dates are proper Date objects for destination
-  if (converted.createdAt && !(converted.createdAt instanceof Date)) {
-    converted.createdAt = new Date(converted.createdAt);
-  }
-  if (converted.updatedAt && !(converted.updatedAt instanceof Date)) {
-    converted.updatedAt = new Date(converted.updatedAt);
-  }
+  // if (converted.createdAt && !(converted.createdAt instanceof Date)) {
+  //   converted.createdAt = new Date(converted.createdAt);
+  // }
+  // if (converted.updatedAt && !(converted.updatedAt instanceof Date)) {
+  //   converted.updatedAt = new Date(converted.updatedAt);
+  // }
   
   return converted;
+}
+export function serializeFirebaseData<T>(data: T): T {
+  if (data === null || data === undefined) {
+    return data;
+  }
+  
+  if (data instanceof Timestamp) {
+    return data.toDate().toISOString() as T;
+  }
+  
+  if (Array.isArray(data)) {
+    return data.map(item => serializeFirebaseData(item)) as T;
+  }
+  
+  if (typeof data === 'object') {
+    const result: any = {};
+    for (const key in data) {
+      result[key] = serializeFirebaseData(data[key]);
+    }
+    return result;
+  }
+  
+  return data;
 }
 
 // For Place type  

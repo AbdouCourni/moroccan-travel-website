@@ -96,7 +96,7 @@ export default function Footer() {
                 <span className="font-medium text-primary-gold">Email:</span> info@morocompase.com
               </p>
               <p className="text-gray-300 text-sm">
-                <span className="font-medium text-primary-gold">Phone:</span> +212 537 123 456
+                <span className="font-medium text-primary-gold">Phone:</span> +212 726 850 011
               </p>
               <div className="flex justify-center sm:justify-start space-x-5 mt-5">
                 {socialLinks.map((social) => (
