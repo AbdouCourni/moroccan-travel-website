@@ -1,30 +1,31 @@
 // components/Header.tsx
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import logo from '../src/logo.png';
-import { usePathname, useRouter } from 'next/navigation'; 
-import { useAuth } from '../contexts/AuthContext'; // ← Use your AuthContext
+import { usePathname, useRouter } from 'next/navigation';
+import type { Route } from 'next';
+import { useAuth } from '../contexts/AuthContext';
 import UserMenu from './Auth/UserMenu';
 import LoginForm from './Auth/LoginForm';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLanguage, type Language } from '../contexts/LanguageContext';
+import { Search, Menu, X, User } from 'lucide-react';
+import logo from '../src/logo.png';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const { language, setLanguage, t } = useLanguage();
   const pathname = usePathname();
   const router = useRouter();
-  
-  // ✅ FIX: Use your AuthContext instead of separate user state
   const { user, loading: authLoading } = useAuth();
 
-  // Helper function to get the base path (without /lang segment)
+  // Base path helper
   const basepath = useMemo(() => {
     const parts = pathname.split('/').filter(Boolean);
     if (['en', 'fr', 'ar', 'es'].includes(parts[0])) {
@@ -33,47 +34,80 @@ export default function Header() {
     return pathname;
   }, [pathname]);
 
-  // Mobile detection
+  // Scroll effect for header
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ✅ REMOVE: Delete this entire useEffect - we don't need separate auth state
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     setUser(user);
-  //   });
-  //   return unsubscribe;
-  // }, []);
+  // Mobile detection - lock body scroll
+  useEffect(() => {
+    const checkMobile = () => {
+      if (window.innerWidth < 768 && isMenuOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
 
-  const handleLanguageChange = async (newLanguage: Language) => {
-    const currentBasepath = basepath || '/'; 
-    let newPath = '';
-
+  // Type-safe language change handler
+  const handleLanguageChange = useCallback(async (newLanguage: Language) => {
+    const currentBasepath = basepath || '/';
+    let newPath: string = '';
+    
     if (newLanguage === 'en' && currentBasepath === '/') {
       newPath = '/';
     } else if (newLanguage === 'en') {
-      newPath = currentBasepath; 
+      newPath = currentBasepath;
     } else if (currentBasepath === '/') {
       newPath = `/${newLanguage}`;
     } else {
       newPath = `/${newLanguage}${currentBasepath}`;
     }
-
-    router.push(newPath);
+    
+    // Cast to Route type for Next.js router
+    router.push(newPath as Route);
     setLanguage(newLanguage);
-  };
+    setIsMenuOpen(false);
+  }, [basepath, router, setLanguage]);
   
-  const isActive = (href: string) => {
+  const isActive = useCallback((href: string) => {
     const currentBase = basepath || '/';
     if (href === '/') return currentBase === '/';
     return currentBase === href || currentBase.startsWith(href + '/');
-  };
+  }, [basepath]);
 
-  const handleLinkClick = () => setIsMenuOpen(false);
+  const handleLinkClick = useCallback(() => {
+    setIsMenuOpen(false);
+    document.body.style.overflow = '';
+  }, []);
+
+  const handleSearchSubmit = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      const searchPath = `/${language}/destinations?q=${encodeURIComponent(searchQuery.trim())}`;
+      router.push(searchPath as Route);
+      setSearchQuery('');
+      setIsMenuOpen(false);
+    }
+  }, [searchQuery, language, router]);
+
+  // Type-safe href generator
+  const getLocalizedHref = useCallback((segment: string): Route => {
+    if (language === 'en') {
+      return (segment ? `/${segment}` : '/') as Route;
+    }
+    return (segment ? `/${language}/${segment}` : `/${language}`) as Route;
+  }, [language]);
 
   const navItems = [
     { name: t('home'), href: '' },
@@ -82,163 +116,212 @@ export default function Header() {
     { name: t('transport'), href: 'transport' },
     { name: t('culture'), href: 'culture' },
   ];
-  
-  const getLocalizedHref = (segment: string) => {
-    if (language === 'en') {
-      return segment ? `/${segment}` : '/';
-    }
-    return segment ? `/${language}/${segment}` : `/${language}`;
-  };
 
   return (
     <>
-      <header className="header-glass sticky top-0 z-50 shadow-md bg-white/95 backdrop-blur-sm">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <header 
+        className={`sticky top-0 z-50 transition-all duration-300 ${
+          isScrolled 
+            ? 'bg-white/95 backdrop-blur-md shadow-lg py-2' 
+            : 'bg-white/80 backdrop-blur-sm py-3'
+        }`}
+        role="banner"
+      >
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             
-            {/* Logo and Title */}
-            <Link href={getLocalizedHref('')} className="flex items-center" onClick={handleLinkClick}>
-              <Image 
-                src={logo} 
-                alt="MoroCompase logo" 
-                width={40}
-                height={40}
-                className="w-8 h-8 md:w-10 md:h-10"
-                priority
-              />
-              <span className={`font-amiri font-bold text-primary-gold ${
-                isMobile ? 'text-xl' : 'text-2xl'
+            {/* Logo */}
+            <Link 
+              href={getLocalizedHref('')} 
+              className="flex items-center gap-2 sm:gap-3 group" 
+              onClick={handleLinkClick}
+              aria-label="MoroCompase home"
+            >
+              <div className="relative w-8 h-8 sm:w-10 sm:h-10">
+                <Image 
+                  src={logo} 
+                  alt="MoroCompase" 
+                  fill
+                  className="object-contain transition-transform group-hover:scale-105"
+                  priority
+                />
+              </div>
+              <span className={`font-amiri font-bold text-primary-gold transition-colors ${
+                isScrolled ? 'text-xl' : 'text-2xl'
               }`}>
-                MoroCompase
+                MoroCompase  
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-3 lg:space-x-4">
+            <div className="hidden md:flex items-center gap-1 lg:gap-2">
               {navItems.map((item) => {
                 const localizedHref = getLocalizedHref(item.href);
-                const active = isActive(item.href ? `/${item.href}` : '/'); 
+                const active = isActive(item.href ? `/${item.href}` : '/');
                 
                 return (
                   <Link
                     key={item.href}
                     href={localizedHref}
-                    className={`transition-all duration-300 font-medium px-3 lg:px-4 py-2 rounded-lg ${
+                    className={`relative px-3 lg:px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                       active
-                        ? 'text-black bg-green-500 font-semibold shadow-sm border border-green-200'
+                        ? 'text-black bg-primary-gold/15 font-semibold shadow-sm'
                         : 'text-gray-700 hover:text-primary-gold hover:bg-gray-50'
                     }`}
+                    aria-current={active ? 'page' : undefined}
                   >
                     {item.name}
+                    {active && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary-gold rounded-full" />}
                   </Link>
                 );
               })}
               
-              {/* Desktop Language Switcher */}
-              <div className="ml-2">
+              {/* Language Switcher */}
+              <div className="ml-1">
                 <LanguageSwitcher 
                   currentLanguage={language} 
                   onLanguageChange={handleLanguageChange}
                 />
               </div>
               
-              {/* ✅ FIX: Use user from AuthContext */}
-              {user ? (
+              {/* Auth Section */}
+              {authLoading ? (
+                <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
+              ) : user ? (
                 <UserMenu user={user} />
               ) : (
                 <button 
                   onClick={() => setIsLoginOpen(true)}
-                  className="btn-primary ml-2 px-4 py-2 text-sm"
+                  className="ml-1 inline-flex items-center gap-2 bg-primary-gold text-black px-4 py-2 text-sm rounded-lg font-medium hover:bg-primary-gold/90 transition-all focus:outline-none focus:ring-2 focus:ring-primary-gold focus:ring-offset-2"
                 >
+                  <User className="w-4 h-4" />
                   {t('login')}
                 </button>
               )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center space-x-2">
+            {/* Mobile Controls */}
+            <div className="md:hidden flex items-center gap-2">
+              {/* Mobile Search Toggle */}
+              <button
+                onClick={() => {
+                  // Implement mobile search modal
+                  const searchInput = document.createElement('input');
+                  searchInput.type = 'search';
+                  searchInput.placeholder = t('search') || 'Search destinations...';
+                  // You can implement a proper mobile search modal here
+                }}
+                className="p-2 text-gray-700 hover:text-primary-gold rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+
+              {/* Mobile Auth */}
+              {authLoading ? (
+                <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+              ) : user ? (
+                <UserMenu user={user} mobile />
+              ) : (
+                <button 
+                  onClick={() => setIsLoginOpen(true)}
+                  className="p-2 text-gray-700 hover:text-primary-gold rounded-lg hover:bg-gray-100 transition-colors"
+                  aria-label="Login"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+              )}
+              
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 text-gray-700 hover:text-primary-gold rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={isMenuOpen}
+              >
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          <div 
+            className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+              isMenuOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
+            }`}
+          >
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 space-y-1">
               {/* Mobile Language Switcher */}
-              <div className="hidden sm:block">
+              <div className="pb-3 border-b border-gray-100">
                 <LanguageSwitcher 
                   currentLanguage={language} 
                   onLanguageChange={handleLanguageChange}
                   mobile
                 />
               </div>
-
-              {/* ✅ FIX: Use user from AuthContext */}
-              {user ? (
-                <UserMenu user={user} mobile />
-              ) : (
-                <button 
-                  onClick={() => setIsLoginOpen(true)}
-                  className="btn-primary text-xs px-3 py-1.5"
-                >
-                  {t('login')}
-                </button>
-              )}
               
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-700 hover:text-primary-gold p-2 transition-colors rounded-lg hover:bg-gray-100"
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? (
-                  <span className="text-lg">✕</span>
-                ) : (
-                  <span className="text-lg">☰</span>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="md:hidden bg-white/95 backdrop-blur-sm shadow-lg border-t border-gray-200 absolute left-0 right-0">
-              <div className="px-4 pt-2 pb-4 space-y-1 bg-white">
-                {/* Mobile Language Switcher - Inside Menu */}
-                <div className="px-4 py-3 sm:hidden border-b border-gray-100">
-                  <LanguageSwitcher 
-                    currentLanguage={language} 
-                    onLanguageChange={handleLanguageChange}
-                    mobile
+              {/* Mobile Search Bar */}
+              <form onSubmit={handleSearchSubmit} className="py-3 border-b border-gray-100">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="search"
+                    placeholder={t('search') || 'Search destinations...'}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-gold focus:ring-2 focus:ring-primary-gold/20 outline-none transition-all"
+                    aria-label="Search destinations"
                   />
                 </div>
-                
-                {navItems.map((item) => {
-                  const active = isActive(item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`block px-4 py-3 rounded-lg transition-all duration-200 ${
-                        active
-                          ? 'text-primary-gold bg-amber-50 font-semibold border-r-2 border-primary-gold'
-                          : 'text-gray-700 hover:text-primary-gold hover:bg-gray-50'
-                      }`}
-                      onClick={handleLinkClick}
-                    >
-                      {item.name}
-                    </Link>
-                  );
-                })}
-              </div>
+              </form>
+              
+              {/* Mobile Nav Items */}
+              {navItems.map((item) => {
+                const active = isActive(item.href ? `/${item.href}` : '/');
+                return (
+                  <Link
+                    key={item.href}
+                    href={getLocalizedHref(item.href)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                      active
+                        ? 'bg-primary-gold/10 text-primary-gold font-semibold border-l-4 border-primary-gold'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-primary-gold'
+                    }`}
+                    onClick={handleLinkClick}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-current opacity-50" />
+                    {item.name}
+                  </Link>
+                );
+              })}
             </div>
-          )}
+          </div>
         </nav>
       </header>
 
       {/* Login Modal */}
       {isLoginOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">{t('login')} to MoroCompase</h3>
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setIsLoginOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="login-modal-title"
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-5">
+              <h3 id="login-modal-title" className="text-xl font-semibold text-gray-900">
+                {t('login')} to MoroCompase
+              </h3>
               <button 
                 onClick={() => setIsLoginOpen(false)} 
-                className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100"
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="Close login modal"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
             <LoginForm onSuccess={() => setIsLoginOpen(false)} />

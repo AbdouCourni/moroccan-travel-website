@@ -1,8 +1,14 @@
 // components/Footer.tsx
+'use client';
+
 import Link from 'next/link';
+import { useState } from 'react';
+import { ArrowUp, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
-  // Fixed English language for footer links
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
   const footerLinks = {
     explore: [
       { name: 'Destinations', href: '/en/destinations' },
@@ -18,46 +24,94 @@ export default function Footer() {
       { name: 'Terms of Service', href: '/en/terms-of-service' },
       { name: 'About Us', href: '/en/about' },
     ],
+    resources: [
+      { name: 'Travel Tips', href: '/en/travel-tips' },
+      { name: 'Packing Guide', href: '/en/packing-guide' },
+      { name: 'Weather Guide', href: '/en/weather' },
+      { name: 'Local Customs', href: '/en/customs' },
+    ],
   };
 
   const socialLinks = [
-    { name: 'FB', href: 'https://facebook.com/morocompase', label: 'Facebook' },
-    { name: 'IG', href: 'https://instagram.com/morocompase', label: 'Instagram' },
-    { name: 'TW', href: 'https://twitter.com/morocompase', label: 'Twitter' },
-    { name: 'YT', href: 'https://youtube.com/@morocompase', label: 'YouTube' },
+    { name: 'Facebook', href: 'https://facebook.com/morocompase', icon: 'FB' },
+    { name: 'Instagram', href: 'https://instagram.com/morocompase', icon: 'IG' },
+    { name: 'Twitter', href: 'https://twitter.com/morocompase', icon: 'TW' },
+    { name: 'YouTube', href: 'https://youtube.com/@morocompase', icon: 'YT' },
   ];
 
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      // TODO: Implement newsletter subscription
+      setSubscribed(true);
+      setEmail('');
+      setTimeout(() => setSubscribed(false), 3000);
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 py-12 mt-auto border-t border-primary-gold/20">
+    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 pt-12 pb-6 mt-auto border-t border-primary-gold/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {/* Brand */}
-          <div className="text-center sm:text-left">
-            <h3 className="font-amiri text-2xl lg:text-3xl font-bold text-primary-gold mb-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
+          
+          {/* Brand Section */}
+          <div className="lg:col-span-2 text-center sm:text-left">
+            <h3 className="font-amiri text-2xl lg:text-3xl font-bold text-primary-gold mb-4">
               MoroCompase
             </h3>
-            <p className="text-gray-300 text-sm leading-relaxed">
-              Your ultimate guide to discovering the magic of Morocco. From ancient cities to modern experiences.
+            <p className="text-gray-300 text-sm leading-relaxed mb-6 max-w-md mx-auto sm:mx-0">
+              Your ultimate guide to discovering the magic of Morocco. From ancient medinas to Sahara adventures, we curate authentic experiences with local experts.
             </p>
+            
+            {/* Newsletter Signup - NEW */}
+            <form onSubmit={handleSubscribe} className="flex gap-2 max-w-sm mx-auto sm:mx-0">
+              <div className="relative flex-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-800 border border-gray-700 rounded-lg focus:border-primary-gold focus:ring-1 focus:ring-primary-gold outline-none text-white placeholder-gray-400"
+                  aria-label="Email for newsletter"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-4 py-2.5 bg-primary-gold text-black font-medium rounded-lg hover:bg-primary-gold-hover transition-colors text-sm whitespace-nowrap"
+              >
+                Subscribe
+              </button>
+            </form>
+            {subscribed && (
+              <p className="text-green-400 text-xs mt-2 text-center sm:text-left">
+                ✓ Thank you for subscribing!
+              </p>
+            )}
           </div>
 
-          {/* Quick Links - Explore */}
-          <div className="text-center sm:text-left">
-            <h4 className="font-semibold text-lg lg:text-xl mb-4 text-primary-gold border-b border-primary-gold/30 inline-block pb-1">
+          {/* Explore Links */}
+          <div>
+            <h4 className="font-semibold text-lg mb-4 text-primary-gold border-b border-primary-gold/30 inline-block pb-1">
               Explore
             </h4>
-            <ul className="space-y-3 mt-3">
+            <ul className="space-y-3">
               {footerLinks.explore.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className={`text-gray-300 hover:text-primary-gold transition-all duration-300 text-sm lg:text-base hover:translate-x-1 inline-block ${
-                      link.highlight ? 'font-semibold hover:scale-105' : ''
+                    className={`text-gray-300 hover:text-primary-gold transition-all duration-200 text-sm flex items-center gap-2 group ${
+                      link.highlight ? 'font-semibold' : ''
                     }`}
                   >
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-gold opacity-0 group-hover:opacity-100 transition-opacity" />
                     {link.name}
                     {link.highlight && (
-                      <span className="ml-2 text-xs bg-primary-gold/20 text-primary-gold px-2 py-0.5 rounded-full">
+                      <span className="ml-auto text-xs bg-primary-gold/20 text-primary-gold px-2 py-0.5 rounded-full">
                         New
                       </span>
                     )}
@@ -67,18 +121,19 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Support */}
-          <div className="text-center sm:text-left">
-            <h4 className="font-semibold text-lg lg:text-xl mb-4 text-primary-gold border-b border-primary-gold/30 inline-block pb-1">
+          {/* Support Links */}
+          <div>
+            <h4 className="font-semibold text-lg mb-4 text-primary-gold border-b border-primary-gold/30 inline-block pb-1">
               Support
             </h4>
-            <ul className="space-y-3 mt-3">
+            <ul className="space-y-3">
               {footerLinks.support.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-300 hover:text-primary-gold transition-all duration-300 text-sm lg:text-base hover:translate-x-1 inline-block"
+                    className="text-gray-300 hover:text-primary-gold transition-all duration-200 text-sm flex items-center gap-2 group"
                   >
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-gold opacity-0 group-hover:opacity-100 transition-opacity" />
                     {link.name}
                   </Link>
                 </li>
@@ -86,29 +141,43 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact & Social */}
-          <div className="text-center sm:text-left">
-            <h4 className="font-semibold text-lg lg:text-xl mb-4 text-primary-gold border-b border-primary-gold/30 inline-block pb-1">
+          {/* Contact Section */}
+          <div>
+            <h4 className="font-semibold text-lg mb-4 text-primary-gold border-b border-primary-gold/30 inline-block pb-1">
               Connect
             </h4>
-            <div className="space-y-3 mt-3">
-              <p className="text-gray-300 text-sm break-words">
-                <span className="font-medium text-primary-gold">Email:</span> info@morocompase.com
-              </p>
-              <p className="text-gray-300 text-sm">
-                <span className="font-medium text-primary-gold">Phone:</span> +212 726 850 011
-              </p>
-              <div className="flex justify-center sm:justify-start space-x-5 mt-5">
+            <div className="space-y-4">
+              <a 
+                href="mailto:info@morocompase.com" 
+                className="flex items-center gap-3 text-gray-300 hover:text-primary-gold transition-colors text-sm group"
+              >
+                <Mail className="w-4 h-4 text-primary-gold" />
+                <span>info@morocompase.com</span>
+              </a>
+              <a 
+                href="tel:+212726850011" 
+                className="flex items-center gap-3 text-gray-300 hover:text-primary-gold transition-colors text-sm group"
+              >
+                <Phone className="w-4 h-4 text-primary-gold" />
+                <span>+212 726 850 011</span>
+              </a>
+              <div className="flex items-start gap-3 text-gray-300 text-sm">
+                <MapPin className="w-4 h-4 text-primary-gold mt-0.5 flex-shrink-0" />
+                <span>Marrakech, Morocco</span>
+              </div>
+              
+              {/* Social Links - Enhanced */}
+              <div className="flex gap-3 pt-2">
                 {socialLinks.map((social) => (
                   <a
                     key={social.name}
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={social.label}
-                    className="text-gray-400 hover:text-primary-gold transition-all duration-300 hover:scale-110 text-sm font-medium"
+                    aria-label={social.name}
+                    className="w-9 h-9 flex items-center justify-center bg-gray-800 hover:bg-primary-gold text-gray-300 hover:text-black rounded-lg transition-all duration-200 text-sm font-medium"
                   >
-                    {social.name}
+                    {social.icon}
                   </a>
                 ))}
               </div>
@@ -116,15 +185,38 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-primary-gold/20 mt-10 pt-8 text-center">
-          <p className="text-gray-400 text-xs sm:text-sm">
+        {/* Bottom Bar */}
+        <div className="border-t border-primary-gold/20 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-gray-400 text-xs sm:text-sm text-center sm:text-left">
             &copy; {new Date().getFullYear()} MoroCompase. All rights reserved.
-            <span className="hidden sm:inline"> Discover the magic of Morocco.</span>
+            <span className="hidden sm:inline"> • Discover the magic of Morocco.</span>
           </p>
-          <p className="text-gray-500 text-xs mt-2 sm:hidden">
-            Discover the magic of Morocco.
-          </p>
+          
+          {/* Back to Top Button - NEW */}
+          <button
+            onClick={scrollToTop}
+            className="inline-flex items-center gap-1.5 text-gray-400 hover:text-primary-gold text-xs sm:text-sm transition-colors group"
+            aria-label="Back to top"
+          >
+            Back to top
+            <ArrowUp className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
+          </button>
+        </div>
+
+        {/* Trust Badges - NEW */}
+        <div className="mt-8 pt-6 border-t border-gray-800 flex flex-wrap justify-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-2 text-gray-400 text-xs">
+            <span className="w-2 h-2 bg-green-500 rounded-full" />
+            Secure Booking
+          </div>
+          <div className="flex items-center gap-2 text-gray-400 text-xs">
+            <span className="w-2 h-2 bg-green-500 rounded-full" />
+            Local Experts
+          </div>
+          <div className="flex items-center gap-2 text-gray-400 text-xs">
+            <span className="w-2 h-2 bg-green-500 rounded-full" />
+            24/7 Support
+          </div>
         </div>
       </div>
     </footer>

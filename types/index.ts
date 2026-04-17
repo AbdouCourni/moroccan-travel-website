@@ -174,6 +174,19 @@ export interface Place {
   accessibility: string[];
   createdAt: Date;
   updatedAt: Date;
+  destinationId : string; // Reference to parent destination
+}
+
+
+export interface AffiliatePartner {
+  id: string;
+  name: string;
+  icon: string;
+  baseUrl: string;
+  color: string;
+  textColor?: string;
+  commission?: string;
+  isActive: boolean;
 }
 
 

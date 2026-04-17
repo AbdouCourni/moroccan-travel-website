@@ -50,7 +50,7 @@ export default function InteractiveMoroccoMap({ destinations, places }: Props) {
 
     // Filter destinations that should be shown on map
     const visibleDestinations = destinations.filter(dest => dest.showOnMap);
-    const topPlaces = places.filter(place => place.rating && place.rating >= 4.0).slice(0, 20);
+    const topPlaces = places.filter(place => place.rating && place.rating >= 4.0).slice(0, 40);
     useEffect(() => {
         const fetchRegions = async () => {
             const fetchedRegions = await getMoroccanRegions();

@@ -121,7 +121,7 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Link href="/admin/destinations" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow block">
+          {/* <Link href="/admin/destinations" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow block">
             <h3 className="text-lg font-semibold mb-2">Manage Destinations</h3>
             <p className="text-gray-600 text-sm">Add, edit, or remove destination information</p>
           </Link>
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
           <Link href="/admin/bookings" className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow block">
             <h3 className="text-lg font-semibold mb-2">View Bookings</h3>
             <p className="text-gray-600 text-sm">Monitor and manage customer bookings</p>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>

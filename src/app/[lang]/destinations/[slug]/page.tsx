@@ -5,7 +5,8 @@ import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces } from '
 import { DestinationGallery } from '../../../../../components/DestinationGallery';
 import { ImageSlider } from '../../../../../components/ImageSlider';
 import { PlacesGrid } from '../../../../../components/PlacesGrid';
-import { AccommodationCard } from '../../../../../components/AccommodationCard';
+//import { AccommodationCard } from '../../../../../components/AccommodationCard';
+import { AccommodationSection } from '../../../../../components/AccommodationSection';
 import { ActivityCard } from '../../../../../components/ActivityCard';
 import { MapPin, Calendar, Star, Navigation, Home, Car, Bus, Utensils, Mountain, Camera } from 'lucide-react';
 import { detectLanguage, getLocalizedText } from '../../../../../lib/language-server';
@@ -13,6 +14,10 @@ import { convertFirebaseData, convertDestinationData } from '../../../../../lib/
 import { Metadata } from 'next';
 import { DestinationStructuredData } from '../../../../../components/seo/StructuredData';
 import { Place } from '../../../../../types';
+import dynamic from 'next/dynamic';
+
+
+
 
 // Server-side translations
 const translations = {
@@ -182,7 +187,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   try {
     const destination = await getDestinationBySlug(params.slug);
-    
+
     if (!destination) {
       return {
         title: 'Destination Not Found',
@@ -225,7 +230,7 @@ export default async function DestinationPage({
 }) {
   try {
     const { slug, lang } = params;
-    
+
     // Validate language
     const validLanguages = ['en', 'fr', 'ar', 'es'];
     const currentLanguage = validLanguages.includes(lang) ? lang as 'en' | 'fr' | 'ar' | 'es' : 'en';
@@ -240,7 +245,7 @@ export default async function DestinationPage({
     // Get places data with error handling
     let places: Place[] = [];
     let popularPlaces = [];
-    
+
     try {
       places = await getPlacesByDestination(destination.id, 6);
       popularPlaces = await getPopularPlaces(destination.id, 3);
@@ -264,91 +269,96 @@ export default async function DestinationPage({
       <div className="min-h-screen bg-white">
         {/* Add Structured Data for SEO */}
         <DestinationStructuredData destination={convertedDestination} />
-        
-        {/* Modern Hero Section with Image Slider */}
-        <section className="relative h-[70vh] min-h-[600px]">
-          {destination.images && destination.images.length > 1 ? (
-            <ImageSlider images={destination.images} alt={displayName} />
-          ) : (
-            <div className="absolute inset-0">
-              <img 
-                src={destination.images?.[0] || '/images/placeholder.jpg'} 
-                alt={displayName}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-            </div>
-          )}
-          
-          {/* Floating Header */}
-          <div className="relative z-10 pt-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <Link 
-                href={`/${currentLanguage}/destinations`}
-                className="inline-flex items-center text-white/90 hover:text-white transition-colors backdrop-blur-sm bg-white/10 rounded-full px-4 py-2 border border-white/20"
-              >
-                <Navigation className="w-4 h-4 mr-2" />
-                {t('backToDestinations')}
-              </Link>
-            </div>
-          </div>
 
-          {/* Hero Content */}
-          <div className="absolute bottom-0 left-0 right-0 z-10 p-8">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                <div className="text-white">
-                  <div className="flex items-center gap-3 mb-3">
-                    <MapPin className="w-5 h-5" />
-                    <span className="text-lg font-medium">{regionName}</span>
-                  </div>
-                  <h1 className="font-amiri text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-tight">
-                    {displayName}
-                  </h1>
-                  <p className="text-xl md:text-2xl max-w-3xl leading-relaxed opacity-95">
-                    {displayDescription}
-                  </p>
-                </div>
-                
-                {/* Quick Facts */}
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-white max-w-md">
-                  <h3 className="font-amiri text-2xl font-bold mb-4">{t('atAGlance')}</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-5 h-5" />
-                      <div>
-                        <div className="font-medium">{t('bestTimeToVisit')}</div>
-                        <div className="text-sm opacity-90">
-                          {destination.bestSeason?.join(', ') || t('yearRound')}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Star className="w-5 h-5" />
-                      <div>
-                        <div className="font-medium">{t('topActivities')}</div>
-                        <div className="text-sm opacity-90">
-                          {destination.activities?.slice(0, 2).join(', ') || 'Various activities'}
-                        </div>
-                      </div>
-                    </div>
-                    {popularPlaces.length > 0 && (
-                      <div className="flex items-center gap-3">
-                        <Camera className="w-5 h-5" />
-                        <div>
-                          <div className="font-medium">{t('popularPlaces')}</div>
-                          <div className="text-sm opacity-90">
-                            {popularPlaces.length}+ {t('attractions')}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
+
+        {/* Container: Changed to fixed height with better overflow management */}
+<section className="relative h-[500px] md:h-[550px] w-full overflow-hidden">
+  {destination.images && destination.images.length > 1 ? (
+    <ImageSlider images={destination.images} alt={displayName} />
+  ) : (
+    <div className="absolute inset-0">
+      <img
+        src={destination.images?.[0] || '/images/placeholder.jpg'}
+        alt={displayName}
+        className="w-full h-full object-cover"
+      />
+      {/* Darker overlay for better text contrast since we're cramming content */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+    </div>
+  )}
+
+  {/* Floating Header: Back Button */}
+  <div className="relative z-20 pt-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Link
+        href={`/${currentLanguage}/destinations`}
+        className="inline-flex items-center text-white/90 hover:text-white transition-all backdrop-blur-md bg-black/20 hover:bg-black/40 rounded-full px-5 py-2 border border-white/20 text-sm font-medium"
+      >
+        <Navigation className="w-4 h-4 mr-2" />
+        {t('backToDestinations')}
+      </Link>
+    </div>
+  </div>
+
+  {/* Hero Content: Bottom Aligned */}
+  <div className="absolute bottom-0 left-0 right-0 z-10 pb-10 pt-20">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+        
+        <div className="text-white flex-1">
+          <div className="flex items-center gap-2 mb-3 text-primary-gold">
+            <MapPin className="w-4 h-4" />
+            <span className="text-sm font-bold uppercase tracking-widest">{regionName}</span>
+          </div>
+          
+          {/* Scaled down the title significantly for better balance */}
+          <h1 className="font-amiri text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight tracking-tight">
+            {displayName}
+          </h1>
+          
+          <p className="text-base md:text-lg max-w-2xl leading-relaxed text-white/90 line-clamp-2 md:line-clamp-none">
+            {displayDescription}
+          </p>
+        </div>
+
+        {/* Quick Facts: More compact version */}
+        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/20 text-white w-full lg:max-w-[320px] shrink-0 shadow-2xl">
+          <h3 className="font-amiri text-xl font-bold mb-3 border-b border-white/10 pb-2">{t('atAGlance')}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4">
+            
+            <div className="flex items-center gap-3">
+              <Calendar className="w-4 h-4 text-primary-gold" />
+              <div>
+                <div className="text-[10px] uppercase tracking-wider opacity-70 font-bold">{t('bestTimeToVisit')}</div>
+                <div className="text-sm font-medium">{destination.bestSeason?.join(', ') || t('yearRound')}</div>
               </div>
             </div>
+
+            <div className="flex items-center gap-3">
+              <Star className="w-4 h-4 text-primary-gold" />
+              <div>
+                <div className="text-[10px] uppercase tracking-wider opacity-70 font-bold">{t('topActivities')}</div>
+                <div className="text-sm font-medium">{destination.activities?.slice(0, 2).join(', ') || 'Culture'}</div>
+              </div>
+            </div>
+
+            {popularPlaces.length > 0 && (
+              <div className="flex items-center gap-3">
+                <Camera className="w-4 h-4 text-primary-gold" />
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider opacity-70 font-bold">{t('popularPlaces')}</div>
+                  <div className="text-sm font-medium">{popularPlaces.length}+ {t('attractions')}</div>
+                </div>
+              </div>
+            )}
+            
           </div>
-        </section>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
 
         {/* Quick Navigation */}
         <section className="sticky top-0 z-40 bg-white shadow-sm border-b">
@@ -406,31 +416,10 @@ export default async function DestinationPage({
         )}
 
         {/* Accommodation Section */}
-        <section id="accommodation" className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
-                {t('whereToStay')} {displayName}
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {t('findPerfectAccommodation')}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {mockAccommodations.map((accommodation) => (
-                <AccommodationCard key={accommodation.id} accommodation={accommodation} />
-              ))}
-            </div>
-            <div className="text-center mt-12">
-              <Link 
-                href={`/${currentLanguage}/stays?city=${destination.slug}`}
-                className="bg-primary-gold text-white px-8 py-4 rounded-xl font-semibold hover:bg-opacity-90 transition duration-300 inline-block"
-              >
-                {t('browseAllAccommodations')}
-              </Link>
-            </div>
-          </div>
-        </section>
+        <AccommodationSection
+          destinationName={displayName}
+          language={currentLanguage}
+        />
 
         {/* Transportation Section */}
         <section id="transport" className="py-16 bg-gray-50">
@@ -447,8 +436,8 @@ export default async function DestinationPage({
               {mockTransportation.map((transport, index) => (
                 <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300">
                   <div className="h-48 overflow-hidden">
-                    <img 
-                      src={transport.image} 
+                    <img
+                      src={transport.image}
                       alt={transport.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -514,7 +503,7 @@ export default async function DestinationPage({
         <section className="py-12 bg-gray-50 border-t">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
-              <Link 
+              <Link
                 href={`/${currentLanguage}/destinations`}
                 className="flex items-center gap-3 text-moroccan-blue hover:text-primary-gold transition-colors font-semibold"
               >
