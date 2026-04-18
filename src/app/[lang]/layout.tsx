@@ -57,6 +57,7 @@ export default async function LangLayout({
   return (
     <LanguageProvider initialLanguage={lang}>
       <AuthProvider>
+        <meta name="agd-partner-manual-verification" />
         <Header />
         <main>{children}</main>
         <GoogleAnalyticsWrapper />
