@@ -173,6 +173,8 @@ export default async function RootLayout({
         
         
          <AuthProvider>
+                  <meta name="agd-partner-manual-verification" />
+
   {children}  {/* Just children, no <main> */}
   <GoogleAnalyticsWrapper />
 </AuthProvider>
