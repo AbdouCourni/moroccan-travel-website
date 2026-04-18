@@ -126,7 +126,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
         <PlaceStructuredData place={convertedPlace} destination={convertedDestination} />
 
         {/* Hero Section */}
-        <section className="relative h-96">
+        <section className="relative h-[600px] w-full overflow-hidden">
           <div className="absolute inset-0">
             <img
               src={convertedPlace.images?.[0] || '/images/placeholder.jpg'}

@@ -1027,3 +1027,16 @@ export interface SavedTripPlan {
   updatedAt: Date;
   version: number;
 }
+//--------------accomodation
+export interface AccommodationPlatform {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  affiliateLink: string;
+  commission?: string;
+  rating?: number;
+  reviewCount?: number;
+  color?: string;
+  features?: string[];
+}

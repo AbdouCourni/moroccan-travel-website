@@ -1,170 +1,145 @@
+// app/[lang]/stays/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../../../lib/firebase';
-import { Accommodation } from '../../../../types';
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { AccommodationPlatformCard } from '../../../../components/AccommodationPlatformCard';
+import { AccommodationPlatform } from '../../../../types';
+import { getAccommodationPlatforms } from '../../../../lib/firebase-server';
+
+const accommodationPlatforms = await getAccommodationPlatforms();
+
+
+// useEffect(() => {
+//   const fetchPlatforms = async () => {
+//     const accommodationPlatforms = await getAccommodationPlatforms();
+//     setPlatforms(accommodationPlatforms);
+//   };
+//   fetchPlatforms();
+// }, []);
 
 export default function StaysPage() {
-  const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    city: '',
-    type: '',
-    priceRange: [0, 500],
-    amenities: [] as string[]
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('all');
+  const [destination, setDestination] = useState('');
+
+  const filteredPlatforms = accommodationPlatforms.filter(platform => {
+    if (selectedPlatform !== 'all' && platform.id !== selectedPlatform) return false;
+    if (searchTerm && !platform.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
   });
 
-  useEffect(() => {
-    loadAccommodations();
-  }, []);
-
-  const loadAccommodations = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'accommodations'));
-      const accommodationsData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Accommodation[];
-      setAccommodations(accommodationsData);
-    } catch (error) {
-      console.error('Error loading accommodations:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // You can use the destination for filtering or pass to cards
+    console.log('Searching for:', destination);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen pt-16 flex items-center justify-center">
-        <div className="text-lg">Loading accommodations...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen pt-16">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h1 className="font-amiri text-4xl font-bold text-dark-charcoal">Find Your Perfect Stay</h1>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-lg">
-            Discover authentic riads, desert camps, and modern apartments across Morocco
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-r from-primary-gold/20 via-amber-50 to-primary-gold/20 py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="font-amiri text-5xl md:text-6xl font-bold text-dark-charcoal mb-4">
+            Find Your Perfect Stay
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Compare prices from the world's best booking platforms. Find the perfect riad, hotel, or apartment for your Moroccan adventure.
           </p>
         </div>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-              <select
-                value={filters.city}
-                onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded-lg"
+      {/* Search Section */}
+      <div className="container mx-auto px-4 -mt-8">
+        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-3xl mx-auto">
+          <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
+            <input
+              type="text"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              placeholder="Where are you going? (e.g., Marrakech, Fes, Chefchaouen)"
+              className="flex-1 px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-gold focus:border-primary-gold outline-none transition"
+            />
+            <button
+              type="submit"
+              className="bg-primary-gold text-black px-8 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition-all duration-300 hover:scale-105"
+            >
+              Search Stays
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Filter Section */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+          <div className="flex gap-3 flex-wrap">
+            <button
+              onClick={() => setSelectedPlatform('all')}
+              className={`px-4 py-2 rounded-full transition-all duration-200 ${
+                selectedPlatform === 'all'
+                  ? 'bg-primary-gold text-black font-semibold shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              All Platforms
+            </button>
+            {accommodationPlatforms.map(platform => (
+              <button
+                key={platform.id}
+                onClick={() => setSelectedPlatform(platform.id)}
+                className={`px-4 py-2 rounded-full transition-all duration-200 ${
+                  selectedPlatform === platform.id
+                    ? 'bg-primary-gold text-black font-semibold shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
               >
-                <option value="">All Cities</option>
-                <option value="marrakech">Marrakech</option>
-                <option value="fes">Fes</option>
-                <option value="chefchaouen">Chefchaouen</option>
-                <option value="casablanca">Casablanca</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
-              <select
-                value={filters.type}
-                onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              >
-                <option value="">All Types</option>
-                <option value="riad">Riad</option>
-                <option value="hotel">Hotel</option>
-                <option value="apartment">Apartment</option>
-                <option value="desert_camp">Desert Camp</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Price: ${filters.priceRange[0]} - ${filters.priceRange[1]}
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="500"
-                value={filters.priceRange[1]}
-                onChange={(e) => setFilters({ ...filters, priceRange: [filters.priceRange[0], parseInt(e.target.value)] })}
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
-              <select
-                multiple
-                value={filters.amenities}
-                onChange={(e) => setFilters({ ...filters, amenities: Array.from(e.target.selectedOptions, option => option.value) })}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              >
-                <option value="wifi">WiFi</option>
-                <option value="pool">Pool</option>
-                <option value="breakfast">Breakfast</option>
-                <option value="air_conditioning">Air Conditioning</option>
-              </select>
-            </div>
+                {platform.name}
+              </button>
+            ))}
           </div>
+          
+          <input
+            type="text"
+            placeholder="Search platform..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-gold focus:border-primary-gold outline-none w-full md:w-64"
+          />
         </div>
 
-        {/* Accommodations Grid */}
+        {/* Results Count */}
+        <p className="text-center text-gray-500 mb-6">
+          Found {filteredPlatforms.length} booking platforms
+        </p>
+
+        {/* Platforms Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {accommodations.map((accommodation) => (
-            <div key={accommodation.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-            
-              <Image
-                src={accommodation.images[0] || '/images/default-accommodation.jpg'}
-                alt={accommodation.name.en}
-                width={400}
-                height={192}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-amiri text-xl font-bold">{accommodation.name.en}</h3>
-                  <span className="bg-primary-gold text-white px-2 py-1 rounded text-sm">
-                    ${accommodation.price.nightly}/night
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-3">{accommodation.city} • {accommodation.type}</p>
-
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center">
-                    <span className="text-yellow-500">★</span>
-                    <span className="ml-1 font-semibold">{accommodation.rating}</span>
-                    <span className="text-gray-500 ml-1">({accommodation.reviewCount} reviews)</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {accommodation.amenities.slice(0, 3).map((amenity, index) => (
-                    <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs">
-                      {amenity}
-                    </span>
-                  ))}
-                </div>
-
-                <button className="w-full btn-primary">View Details</button>
-              </div>
-            </div>
+          {filteredPlatforms.map((platform) => (
+            <AccommodationPlatformCard 
+              key={platform.id} 
+              platform={platform} 
+              destinationName={destination || 'Morocco'}
+            />
           ))}
         </div>
 
-        {accommodations.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No accommodations found matching your criteria.</p>
+        {/* Empty State */}
+        {filteredPlatforms.length === 0 && (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🏨</div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">No platforms found</h3>
+            <p className="text-gray-500">Try adjusting your search criteria</p>
           </div>
         )}
+
+        {/* Trust Badge */}
+        <div className="mt-12 text-center">
+          <div className="inline-flex items-center gap-2 bg-gray-100 px-6 py-3 rounded-full">
+            <span className="text-sm text-gray-600">
+              🔒 Secure Booking • Best Price Guarantee • Free Cancellation on Most Properties
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -33,11 +33,12 @@ export default function PlaceGallery({
       </div>
 
       {lightboxIndex !== null && (
-        <ImageLightbox
+        <ImageLightbox 
           images={images}
           index={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
           setIndex={setLightboxIndex}
+          className="z-50"
         />
       )}
     </div>

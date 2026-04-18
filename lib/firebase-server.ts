@@ -1359,3 +1359,19 @@ export async function searchAll(
     return { destinations: [], places: [] };
   }
 }
+
+// Get accommodation platforms from Firebase
+export async function getAccommodationPlatforms(): Promise<any[]> {
+  try {
+    const platformsRef = collection(db, 'accommodation_platforms');
+    const snapshot = await getDocs(platformsRef);
+    
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error fetching accommodation platforms:', error);
+    return [];
+  }
+}
