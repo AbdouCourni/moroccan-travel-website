@@ -35,7 +35,7 @@ export default function StaysPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-primary-gold/20 via-amber-50 to-primary-gold/20 py-16">
         <div className="container mx-auto px-4 text-center">

@@ -54,13 +54,13 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 pt-12 pb-6 mt-auto border-t border-primary-gold/20">
+    <footer className="bg-gray-800 pt-12 pb-6 mt-auto border-t border-primary-gold/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
           
           {/* Brand Section */}
           <div className="lg:col-span-2 text-center sm:text-left">
-            <h3 className="font-amiri text-2xl lg:text-3xl font-bold text-primary-gold mb-4">
+            <h3 className="font-amiri text-2xl lg:text-3xl font-bold text-gray-300 mb-4">
               MoroCompase
             </h3>
             <p className="text-gray-300 text-sm leading-relaxed mb-6 max-w-md mx-auto sm:mx-0">
@@ -96,7 +96,7 @@ export default function Footer() {
 
           {/* Explore Links */}
           <div>
-            <h4 className="font-semibold text-lg mb-4 text-primary-gold border-b border-primary-gold/30 inline-block pb-1">
+            <h4 className="font-semibold text-lg mb-4 text-gray-300 border-b border-primary-gold/30 inline-block pb-1">
               Explore
             </h4>
             <ul className="space-y-3">
@@ -123,7 +123,7 @@ export default function Footer() {
 
           {/* Support Links */}
           <div>
-            <h4 className="font-semibold text-lg mb-4 text-primary-gold border-b border-primary-gold/30 inline-block pb-1">
+            <h4 className="font-semibold text-lg mb-4 text-gray-300 border-b border-primary-gold/30 inline-block pb-1">
               Support
             </h4>
             <ul className="space-y-3">
@@ -143,7 +143,7 @@ export default function Footer() {
 
           {/* Contact Section */}
           <div>
-            <h4 className="font-semibold text-lg mb-4 text-primary-gold border-b border-primary-gold/30 inline-block pb-1">
+            <h4 className="font-semibold text-lg mb-4 text-gray-300 border-b border-primary-gold/30 inline-block pb-1">
               Connect
             </h4>
             <div className="space-y-4">

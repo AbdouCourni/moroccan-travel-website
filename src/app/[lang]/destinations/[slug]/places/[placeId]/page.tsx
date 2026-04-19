@@ -236,7 +236,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
               <div className="lg:col-span-2">
                 {/* Description */}
                 <div className="mb-8">
-                  <h2 className="font-amiri text-3xl font-bold text-gray-900 mb-4">About</h2>
+                  <h2 className="font-amiri text-3xl font-bold text-primary-gold mb-4">About</h2>
                   <p className="text-gray-700 text-lg leading-relaxed">{displayDescription}</p>
                 </div>
 
@@ -250,7 +250,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 {/* Tips */}
                 {convertedPlace.tips && convertedPlace.tips.length > 0 && (
                   <div className="mb-8">
-                    <h3 className="font-amiri text-2xl font-bold text-gray-900 mb-4">Visitor Tips</h3>
+                    <h3 className="font-amiri text-2xl font-bold text-primary-gold mb-4">Visitor Tips</h3>
                     <ul className="space-y-2">
                       {convertedPlace.tips.map((tip: string, index: number) => (
                         <li key={index} className="flex items-start gap-3 text-gray-700">
@@ -265,7 +265,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 {/* Accessibility */}
                 {convertedPlace.accessibility && convertedPlace.accessibility.length > 0 && (
                   <div className="mb-8">
-                    <h3 className="font-amiri text-2xl font-bold text-gray-900 mb-4">Accessibility</h3>
+                    <h3 className="font-amiri text-2xl font-bold text-primary-gold mb-4">Accessibility</h3>
                     <div className="flex flex-wrap gap-2">
                       {convertedPlace.accessibility.map((feature: string, index: number) => (
                         <span
@@ -285,7 +285,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 {/* Best Time to Visit */}
                 {convertedPlace.bestTimeToVisit && convertedPlace.bestTimeToVisit.length > 0 && (
                   <div className="bg-gray-50 rounded-2xl p-6">
-                    <h3 className="font-amiri text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <h3 className="font-amiri text-xl font-bold text-primary-gold mb-3 flex items-center gap-2">
                       <Calendar className="w-5 h-5" />
                       Best Time to Visit
                     </h3>
@@ -302,7 +302,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 {/* Opening Hours */}
                 {convertedPlace.openingHours && (
                   <div className="bg-gray-50 rounded-2xl p-6">
-                    <h3 className="font-amiri text-xl font-bold text-gray-900 mb-3">
+                    <h3 className="font-amiri text-xl font-bold text-primary-gold mb-3">
                       Opening Hours
                     </h3>
                     <div className="space-y-2">
@@ -319,7 +319,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 {/* Contact Information */}
                 {convertedPlace.contact && (
                   <div className="bg-gray-50 rounded-2xl p-6">
-                    <h3 className="font-amiri text-xl font-bold text-gray-900 mb-3">
+                    <h3 className="font-amiri text-xl font-bold text-primary-gold mb-3">
                       Contact Information
                     </h3>
                     <div className="space-y-3">
@@ -349,7 +349,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 {/* Location Map */}
                 <div className="bg-gray-50 rounded-2xl p-6">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3">
-                    <h3 className="font-amiri text-xl font-bold text-gray-900">
+                    <h3 className="font-amiri text-xl font-bold text-primary-gold">
                       Location
                     </h3>
                   </div>

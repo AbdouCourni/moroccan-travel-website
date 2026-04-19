@@ -64,41 +64,41 @@ export default function FavoriteShareBar({ placeId, stats, className, placeUrl }
   };
 
   return (
-    <div className={`py-6 flex flex-wrap items-center justify-between gap-4 ${className ?? ''}`}>
-      <div className="flex items-center gap-6">
-        {stats && stats.totalReviews > 0 && (
-          <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 text-yellow-400 fill-current" />
-            <span className="font-semibold text-gray-800">
-              {stats.averageRating.toFixed(1)}
-            </span>
-            <span className="text-gray-600">({stats.totalReviews} reviews)</span>
-          </div>
-        )}
+   <div className={`py-6 flex flex-wrap items-center justify-between gap-4 ${className ?? ''}`}>
+  <div className="flex items-center gap-6">
+    {stats && stats.totalReviews > 0 && (
+      <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full">
+        <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
+        <span className="font-bold text-amber-700">
+          {stats.averageRating.toFixed(1)}
+        </span>
+        <span className="text-amber-600 text-sm">({stats.totalReviews} reviews)</span>
       </div>
+    )}
+  </div>
 
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onToggleSave}
-          disabled={saving}
-          className={`flex items-center gap-2 px-4 py-2 border hover:bg-gray-100 rounded-lg transition-colors ${
-            isFav
-              ? 'border-primary-gold text-gray-900'
-              : 'border-gray-300 text-gray-700 hover:border-primary-gold hover:text-primary-gold'
-          }`}
-        >
-          <Heart className={`w-4 h-4 ${isFav ? 'fill-current' : ''}`} />
-          {isFav ? 'Saved' : 'Save'}
-        </button>
+  <div className="flex items-center gap-3">
+    <button
+      onClick={onToggleSave}
+      disabled={saving}
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+        isFav
+          ? 'bg-primary-gold text-red-500 border border-primary-gold shadow-md'
+          : 'bg-white border border-gray-300 text-gray-700 hover:bg-primary-gold/10 hover:border-primary-gold hover:text-primary-gold'
+      }`}
+    >
+      <Heart className={`w-4 h-4 ${isFav ? 'fill-red-500' : ''}`} />
+      <span className="font-medium">{isFav ? 'Saved' : 'Save'}</span>
+    </button>
 
-        <button
-          onClick={onShare}
-          className="flex items-center gap-2 px-4 py-2 border hover:bg-gray-100 border-gray-300 text-gray-700 rounded-lg hover:border-primary-gold hover:text-primary-gold transition-colors"
-        >
-          <Share2 className="w-4 h-4" />
-          {copied ? 'Link copied!' : 'Share'}
-        </button>
-      </div>
-    </div>
-  );
+    <button
+      onClick={onShare}
+      className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 bg-white border border-gray-300 text-gray-700 hover:bg-moroccan-blue/10 hover:border-moroccan-blue hover:text-moroccan-blue"
+    >
+      <Share2 className="w-4 h-4" />
+      <span className="font-medium">{copied ? 'Copied!' : 'Share'}</span>
+    </button>
+  </div>
+</div>
+);
 }

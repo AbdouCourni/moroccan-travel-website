@@ -222,24 +222,41 @@ const Hero = memo(function Hero({ lang = 'en' }: HeroProps) {
     >
       {/* BACKGROUND LAYER */}
       <div className="absolute inset-0 z-0">
-        {!videoError ? (
-          <video
-            ref={videoRef}
-            autoPlay muted loop playsInline
-            className={`w-full h-full object-cover transition-transform duration-[10s] ease-out ${isVideoLoaded ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`}
-            onLoadedData={() => setIsVideoLoaded(true)}
-            onError={() => setVideoError(true)}
-          >
-            <source src="/moroccoVibes.mp4" type="video/mp4" />
-          </video>
-        ) : (
-          <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?q=80&w=2067')] bg-cover bg-center" />
-        )}
+  {!videoError ? (
+    <video
+      ref={videoRef}
+      autoPlay muted loop playsInline
+      className={`w-full h-full object-cover transition-transform duration-[10s] ease-out ${
+        isVideoLoaded ? 'scale-100 opacity-100' : 'scale-110 opacity-0'
+      }`}
+      style={{
+        // Mobile: Full screen coverage (9:16 aspect ratio)
+        objectFit: 'cover',
+        objectPosition: 'center',
+        minHeight: '100vh',
+        minWidth: '100%',
+      }}
+      onLoadedData={() => setIsVideoLoaded(true)}
+      onError={() => setVideoError(true)}
+    >
+      <source src="/moroccoVibes.mp4" type="video/mp4" />
+    </video>
+  ) : (
+    <div 
+      className="w-full h-full bg-cover bg-center"
+      style={{
+        backgroundImage: `url('https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?q=80&w=2067')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh',
+      }}
+    />
+  )}
 
-        {/* MULTI-STAGE OVERLAY FOR READABILITY */}
-        <div className="absolute inset-0 bg-black/40 z-[1]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-gray-900 z-[2]" />
-      </div>
+  {/* MULTI-STAGE OVERLAY FOR READABILITY */}
+  <div className="absolute inset-0 bg-black/40 z-[1]" />
+  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-gray-900 z-[2]" />
+</div>
 
       {/* CONTENT LAYER */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 text-center">
@@ -282,10 +299,10 @@ const Hero = memo(function Hero({ lang = 'en' }: HeroProps) {
               )}
             </div>
 
-            <button className="w-full md:w-auto bg-gray-900 hover:bg-black text-white px-10 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 group-hover:shadow-lg shadow-black/20">
+            {/* <button className="w-full md:w-auto bg-gray-900 hover:bg-black text-white px-10 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 group-hover:shadow-lg shadow-black/20">
               <Search className="w-5 h-5" />
               Search
-            </button>
+            </button> */}
           </form>
 
           {/* SUGGESTIONS DROPDOWN */}
@@ -330,7 +347,7 @@ const Hero = memo(function Hero({ lang = 'en' }: HeroProps) {
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-900">
+                          <span className="font-semibold text-primary-gold">
                             {suggestion.name}
                           </span>
                           <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -363,7 +380,7 @@ const Hero = memo(function Hero({ lang = 'en' }: HeroProps) {
           )}
 
           {/* TRENDING CHIPS */}
-          <div className="flex flex-wrap justify-center gap-3 mt-4">
+          {/* <div className="flex flex-wrap justify-center gap-3 mt-4">
             <span className="text-white/60 text-sm py-1">Trending:</span>
             {content.trending.map(city => (
               <button
@@ -374,7 +391,7 @@ const Hero = memo(function Hero({ lang = 'en' }: HeroProps) {
                 {city}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
 
         {/* SECONDARY ACTIONS */}

@@ -57,7 +57,7 @@ export default function DestinationsClientPage({ initialDestinations }: Destinat
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-4xl font-bold text-primary-gold mb-4">
           {language === 'en' ? 'All Destinations' : 
            language === 'fr' ? 'Toutes les Destinations' : 
            language === 'ar' ? 'جميع الوجهات' : 'Todos los Destinos'}

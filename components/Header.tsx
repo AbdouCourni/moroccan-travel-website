@@ -120,17 +120,17 @@ export default function Header() {
   return (
     <>
       <header 
-        className={`sticky top-0 z-50 transition-all duration-300 ${
-          isScrolled 
-            ? 'bg-white/95 backdrop-blur-md shadow-lg py-2' 
-            : 'bg-white/80 backdrop-blur-sm py-3'
-        }`}
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+    isScrolled 
+      ? 'bg-gradient-to-r from-primary-gold/95 to-moroccan-blue/95 backdrop-blur-md shadow-lg py-1' 
+      : 'bg-gradient-to-r from-primary-gold/85 to-moroccan-blue/85 backdrop-blur-sm py-2'
+  }`}
         role="banner"
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-          <div className="flex justify-between items-center h-14 sm:h-16">
+    <div className="flex justify-between items-center h-12 sm:h-14">
             
-            {/* Logo */}
+            {/* Logo - Brand Color: Primary Gold */}
             <Link 
               href={getLocalizedHref('')} 
               className="flex items-center gap-2 sm:gap-3 group" 
@@ -146,11 +146,11 @@ export default function Header() {
                   priority
                 />
               </div>
-              <span className={`font-amiri font-bold text-primary-gold transition-colors ${
-                isScrolled ? 'text-xl' : 'text-2xl'
-              }`}>
-                MoroCompase  
-              </span>
+             <span className={`font-amiri font-bold text-primary-gold transition-all duration-300 ${
+  isScrolled ? 'text-xl' : 'text-2xl'
+}`}>
+  MoroCompase
+</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -184,7 +184,7 @@ export default function Header() {
                 />
               </div>
               
-              {/* Auth Section */}
+              {/* Auth Section - Brand Colors */}
               {authLoading ? (
                 <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
               ) : user ? (
@@ -192,7 +192,7 @@ export default function Header() {
               ) : (
                 <button 
                   onClick={() => setIsLoginOpen(true)}
-                  className="ml-1 inline-flex items-center gap-2 bg-primary-gold text-black px-4 py-2 text-sm rounded-lg font-medium hover:bg-primary-gold/90 transition-all focus:outline-none focus:ring-2 focus:ring-primary-gold focus:ring-offset-2"
+                  className="ml-1 inline-flex items-center gap-2 bg-gradient-to-r from-primary-gold to-moroccan-blue text-white px-4 py-2 text-sm rounded-lg font-medium hover:from-primary-gold/90 hover:to-moroccan-blue/90 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-gold focus:ring-offset-2 shadow-md"
                 >
                   <User className="w-4 h-4" />
                   {t('login')}
@@ -202,21 +202,6 @@ export default function Header() {
 
             {/* Mobile Controls */}
             <div className="md:hidden flex items-center gap-2">
-              {/* Mobile Search Toggle */}
-              <button
-                onClick={() => {
-                  // Implement mobile search modal
-                  const searchInput = document.createElement('input');
-                  searchInput.type = 'search';
-                  searchInput.placeholder = t('search') || 'Search destinations...';
-                  // You can implement a proper mobile search modal here
-                }}
-                className="p-2 text-gray-700 hover:text-primary-gold rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Search"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-
               {/* Mobile Auth */}
               {authLoading ? (
                 <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
@@ -225,7 +210,7 @@ export default function Header() {
               ) : (
                 <button 
                   onClick={() => setIsLoginOpen(true)}
-                  className="p-2 text-gray-700 hover:text-primary-gold rounded-lg hover:bg-gray-100 transition-colors"
+                  className="p-2 text-primary-gold hover:text-moroccan-blue rounded-lg hover:bg-gray-100 transition-colors"
                   aria-label="Login"
                 >
                   <User className="w-5 h-5" />
@@ -260,21 +245,6 @@ export default function Header() {
                 />
               </div>
               
-              {/* Mobile Search Bar */}
-              <form onSubmit={handleSearchSubmit} className="py-3 border-b border-gray-100">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="search"
-                    placeholder={t('search') || 'Search destinations...'}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:border-primary-gold focus:ring-2 focus:ring-primary-gold/20 outline-none transition-all"
-                    aria-label="Search destinations"
-                  />
-                </div>
-              </form>
-              
               {/* Mobile Nav Items */}
               {navItems.map((item) => {
                 const active = isActive(item.href ? `/${item.href}` : '/');
@@ -284,12 +254,12 @@ export default function Header() {
                     href={getLocalizedHref(item.href)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       active
-                        ? 'bg-primary-gold/10 text-primary-gold font-semibold border-l-4 border-primary-gold'
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-primary-gold'
+                        ? 'bg-gradient-to-r from-primary-gold/10 to-moroccan-blue/10 text-primary-gold font-semibold border-l-4 border-primary-gold'
+                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-primary-gold/5 hover:to-moroccan-blue/5 hover:text-primary-gold'
                     }`}
                     onClick={handleLinkClick}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-current opacity-50" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-primary-gold to-moroccan-blue opacity-50" />
                     {item.name}
                   </Link>
                 );
@@ -309,16 +279,16 @@ export default function Header() {
           aria-labelledby="login-modal-title"
         >
           <div 
-            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl"
+            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border-t-4 border-primary-gold"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-5">
-              <h3 id="login-modal-title" className="text-xl font-semibold text-gray-900">
+              <h3 id="login-modal-title" className="text-xl font-semibold bg-gradient-to-r from-primary-gold to-moroccan-blue bg-clip-text text-transparent">
                 {t('login')} to MoroCompase
               </h3>
               <button 
                 onClick={() => setIsLoginOpen(false)} 
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                className="p-2 text-gray-400 hover:text-primary-gold rounded-full hover:bg-gray-100 transition-colors"
                 aria-label="Close login modal"
               >
                 <X className="w-5 h-5" />

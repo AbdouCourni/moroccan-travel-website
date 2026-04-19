@@ -82,7 +82,7 @@ const DestinationCard = memo(function DestinationCard({
           
           {destination.ranking > 0 && (
             <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm rounded-lg px-2.5 py-1.5 flex items-center gap-1.5 z-10">
-              <Star className="w-3.5 h-3.5 fill-primary-gold text-primary-gold" />
+              <Star className="w-3.5 h-3.5 fill-primary-gold text-white" />
               <span className="text-white text-sm font-semibold">{destination.ranking.toFixed(1)}</span>
             </div>
           )}
@@ -103,14 +103,14 @@ const DestinationCard = memo(function DestinationCard({
           
           <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full z-10">
             <div className="flex items-center gap-1.5">
-              <MapPin className="w-3 h-3 text-primary-gold" />
+              <MapPin className="w-3 h-3 text-red-500" />
               <span className="text-xs font-medium text-white">{destination.region}</span>
             </div>
           </div>
         </div>
 
         <div className="p-4">
-          <h3 className="font-semibold text-lg text-gray-900 mb-1 group-hover:text-primary-gold transition-colors line-clamp-1">
+          <h3 className="font-semibold text-lg text-primary-gold mb-1 group-hover:text-primary-gold transition-colors line-clamp-1">
             {displayName}
           </h3>
           
