@@ -60,7 +60,7 @@ export function TransportationPlatformCard({ platform, destinationName }: Transp
       {/* Content */}
       <div className="p-6">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-amiri text-2xl font-bold text-gray-900 group-hover:text-primary-gold transition-colors">
+          <h3 className="font-amiri text-2xl font-bold text-primary-gold group-hover:text-primary-gold transition-colors">
             {platform.name}
           </h3>
           {platform.commission && (
