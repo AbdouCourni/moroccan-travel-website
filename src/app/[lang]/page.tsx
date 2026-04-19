@@ -160,7 +160,7 @@ export default async function LangHomePage({ params }: { params: { lang: string 
       </Suspense>
       
       {/* Interactive Map Section - Lazy loaded via Client Component */}
-      <section className="py-16 bg-gray-50">
+      {/* <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -180,7 +180,7 @@ export default async function LangHomePage({ params }: { params: { lang: string 
             </Suspense>
           </div>
         </div>
-      </section>
+      </section> */}
       
       {/* Featured Destinations Section */}
       <section id="featured" className="py-16 bg-white">

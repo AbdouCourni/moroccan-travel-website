@@ -1040,3 +1040,18 @@ export interface AccommodationPlatform {
   color?: string;
   features?: string[];
 }
+//-----------------transportaion
+export interface TransportationPlatform {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  affiliateLink: string;
+  commission?: string;
+  rating?: number;
+  reviewCount?: number;
+  isActive: boolean;
+  color?: string;
+  features?: string[];
+  transportTypes?: ('train' | 'bus' | 'car_rental' | 'flight' | 'taxi')[];
+}

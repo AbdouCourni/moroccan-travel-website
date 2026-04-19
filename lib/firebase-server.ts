@@ -1375,3 +1375,19 @@ export async function getAccommodationPlatforms(): Promise<any[]> {
     return [];
   }
 }
+
+// Get transportation platforms from Firebase
+export async function getTransportationPlatforms(): Promise<any[]> {
+  try {
+    const platformsRef = collection(db, 'transportation_platforms');
+    const snapshot = await getDocs(platformsRef);
+    
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error fetching transportation platforms:', error);
+    return [];
+  }
+}

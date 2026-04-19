@@ -49,25 +49,7 @@ export default function StaysPage() {
       </div>
 
       {/* Search Section */}
-      <div className="container mx-auto px-4 -mt-8">
-        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-3xl mx-auto">
-          <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
-            <input
-              type="text"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              placeholder="Where are you going? (e.g., Marrakech, Fes, Chefchaouen)"
-              className="flex-1 px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-gold focus:border-primary-gold outline-none transition"
-            />
-            <button
-              type="submit"
-              className="bg-primary-gold text-black px-8 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition-all duration-300 hover:scale-105"
-            >
-              Search Stays
-            </button>
-          </form>
-        </div>
-      </div>
+     
 
       {/* Filter Section */}
       <div className="container mx-auto px-4 py-8">
