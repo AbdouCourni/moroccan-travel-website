@@ -285,7 +285,7 @@ const Hero = memo(function Hero({ lang = 'en' }: HeroProps) {
                 onKeyDown={handleKeyDown}
                 onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
                 placeholder={content.searchPlaceholder}
-                className="w-full bg-transparent border-none text-gray-900 placeholder-gray-500 focus:ring-0 text-lg py-3 outline-none"
+                className="w-full bg-transparent border-none text-primary-gold placeholder-gray-500 focus:ring-0 text-lg py-3 outline-none"
                 autoComplete="off"
               />
               {searchQuery && (

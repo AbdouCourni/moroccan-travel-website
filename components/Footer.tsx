@@ -4,10 +4,13 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowUp, Mail, Phone, MapPin } from 'lucide-react';
+import { saveSubscriber } from '../lib/firebase-server';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const footerLinks = {
     explore: [
@@ -39,13 +42,26 @@ export default function Footer() {
     { name: 'YouTube', href: 'https://youtube.com/@morocompase', icon: 'YT' },
   ];
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      // TODO: Implement newsletter subscription
-      setSubscribed(true);
-      setEmail('');
-      setTimeout(() => setSubscribed(false), 3000);
+    if (!email) return;
+    
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      const result = await saveSubscriber(email);
+      if (result.success) {
+        setSubscribed(true);
+        setEmail('');
+        setTimeout(() => setSubscribed(false), 3000);
+      } else {
+        setError('Failed to subscribe. Please try again.');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -67,7 +83,7 @@ export default function Footer() {
               Your ultimate guide to discovering the magic of Morocco. From ancient medinas to Sahara adventures, we curate authentic experiences with local experts.
             </p>
             
-            {/* Newsletter Signup - NEW */}
+            {/* Newsletter Signup */}
             <form onSubmit={handleSubscribe} className="flex gap-2 max-w-sm mx-auto sm:mx-0">
               <div className="relative flex-1">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -78,18 +94,25 @@ export default function Footer() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-800 border border-gray-700 rounded-lg focus:border-primary-gold focus:ring-1 focus:ring-primary-gold outline-none text-white placeholder-gray-400"
                   aria-label="Email for newsletter"
+                  required
                 />
               </div>
               <button
                 type="submit"
-                className="px-4 py-2.5 bg-primary-gold text-black font-medium rounded-lg hover:bg-primary-gold-hover transition-colors text-sm whitespace-nowrap"
+                disabled={isLoading}
+                className="px-4 py-2.5 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition-all duration-300 text-sm whitespace-nowrap shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Subscribe
+                {isLoading ? 'Subscribing...' : 'Subscribe'}
               </button>
             </form>
             {subscribed && (
               <p className="text-green-400 text-xs mt-2 text-center sm:text-left">
                 ✓ Thank you for subscribing!
+              </p>
+            )}
+            {error && (
+              <p className="text-red-400 text-xs mt-2 text-center sm:text-left">
+                {error}
               </p>
             )}
           </div>
@@ -166,7 +189,7 @@ export default function Footer() {
                 <span>Marrakech, Morocco</span>
               </div>
               
-              {/* Social Links - Enhanced */}
+              {/* Social Links */}
               <div className="flex gap-3 pt-2">
                 {socialLinks.map((social) => (
                   <a
@@ -192,7 +215,7 @@ export default function Footer() {
             <span className="hidden sm:inline"> • Discover the magic of Morocco.</span>
           </p>
           
-          {/* Back to Top Button - NEW */}
+          {/* Back to Top Button */}
           <button
             onClick={scrollToTop}
             className="inline-flex items-center gap-1.5 text-gray-400 hover:text-primary-gold text-xs sm:text-sm transition-colors group"
@@ -203,7 +226,7 @@ export default function Footer() {
           </button>
         </div>
 
-        {/* Trust Badges - NEW */}
+        {/* Trust Badges */}
         <div className="mt-8 pt-6 border-t border-gray-800 flex flex-wrap justify-center gap-4 sm:gap-6">
           <div className="flex items-center gap-2 text-gray-400 text-xs">
             <span className="w-2 h-2 bg-green-500 rounded-full" />

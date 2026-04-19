@@ -67,6 +67,27 @@ const CACHE_TTL = {
 
 // ==================== DESTINATION QUERIES ====================
 
+export async function getPopularDestinations(count: number = 12): Promise<Destination[]> {
+  // Validate count
+  const validCount = Math.min(Math.max(1, count), TOP_MOROCCAN_DESTINATIONS.length);
+  return selectTopDestinations(validCount);
+}
+
+// Also add a cached version for better performance
+export const getCachedPopularDestinations = unstable_cache(
+  async (count: number = 12) => {
+    const destinations = await getPopularDestinations(count);
+    // Convert Firebase Timestamps for safe serialization
+    return destinations.map(dest => ({
+      ...dest,
+      createdAt: dest.createdAt?.toDate?.()?.toISOString() || dest.createdAt,
+      updatedAt: dest.updatedAt?.toDate?.()?.toISOString() || dest.updatedAt,
+    }));
+  },
+  ['popular-destinations-list'],
+  { revalidate: CACHE_TTL.HOME_PAGE, tags: ['destinations'] }
+);
+
 // ✅ Optimized: Fetch only top destinations using 'in' query
 export async function selectTopDestinations(count: number = 12): Promise<Destination[]> {
   try {
@@ -1389,5 +1410,22 @@ export async function getTransportationPlatforms(): Promise<any[]> {
   } catch (error) {
     console.error('Error fetching transportation platforms:', error);
     return [];
+  }
+}
+
+// Save newsletter subscriber email
+export async function saveSubscriber(email: string) {
+  try {
+    const subscribersRef = collection(db, 'newsletter_subscribers');
+    await addDoc(subscribersRef, {
+      email: email,
+      subscribedAt: Timestamp.now(),
+      status: 'active',
+      source: 'footer_form'
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving subscriber:', error);
+    return { success: false, error };
   }
 }

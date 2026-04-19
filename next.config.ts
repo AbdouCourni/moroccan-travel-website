@@ -29,6 +29,7 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+   htmlLimitedBots: /Googlebot|Google-InspectionTool|Bingbot|Yandex/i,
   
   // Build and performance optimizations
   swcMinify: true,
