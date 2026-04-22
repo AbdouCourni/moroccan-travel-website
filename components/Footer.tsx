@@ -14,12 +14,13 @@ export default function Footer() {
 
   const footerLinks = {
     explore: [
-      { name: 'Destinations', href: '/en/destinations' },
-      { name: 'Stays', href: '/en/stays' },
-      { name: 'Transport', href: '/en/transport' },
-      { name: 'Culture', href: '/en/culture' },
-      { name: 'Discover Morocco', href: '/en/discover-morocco', highlight: true },
-    ],
+  { name: 'Destinations', href: '/en/destinations' },
+  { name: 'Stays', href: '/en/stays' },
+  { name: 'Transport', href: '/en/transport' },
+  { name: 'Culture', href: '/en/culture' },
+  { name: 'Blog', href: '/en/blog' },
+  { name: 'Discover Morocco', href: '/en/discover-morocco', highlight: true },
+],
     support: [
       { name: 'Help Center', href: '/en/help-center' },
       { name: 'Contact Us', href: '/en/contact' },

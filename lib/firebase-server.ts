@@ -1,6 +1,8 @@
 // src/lib/firebase-server.ts
 import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
+import { BlogPost } from '../types/blog';
+
 
 import { 
   collection, 
@@ -1428,4 +1430,36 @@ export async function saveSubscriber(email: string) {
     console.error('Error saving subscriber:', error);
     return { success: false, error };
   }
+}
+
+// Add blog functions to firebase-server.ts
+export async function getBlogPosts(limitCount = 10) {
+  const q = query(
+    collection(db, 'blog_posts'),
+    where('status', '==', 'published'),
+    orderBy('publishedAt', 'desc'),
+    limit(limitCount)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const q = query(
+    collection(db, 'blog_posts'),
+    where('slug', '==', slug),
+    where('status', '==', 'published'),
+    limit(1)
+  );
+
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) return null;
+
+  const data = snapshot.docs[0].data() as Omit<BlogPost, 'id'>;
+
+  return {
+    id: snapshot.docs[0].id,
+    ...data,
+  };
 }

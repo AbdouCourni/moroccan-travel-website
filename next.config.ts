@@ -29,7 +29,7 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-   htmlLimitedBots: /Googlebot|Google-InspectionTool|Bingbot|Yandex/i,
+  htmlLimitedBots: /Googlebot|Google-InspectionTool|Bingbot|Yandex/i,
   
   // Build and performance optimizations
   swcMinify: true,
@@ -103,12 +103,13 @@ const nextConfig: NextConfig = {
     return config;
   },
   
-  // Headers for security and caching
+  // Headers for security, caching, AND AGENT DISCOVERY
   async headers() {
     return [
       {
         source: '/:path*',
         headers: [
+          // Existing security headers
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on'
@@ -129,6 +130,24 @@ const nextConfig: NextConfig = {
             key: 'X-XSS-Protection',
             value: '1; mode=block'
           },
+          // NEW: Agent discovery Link headers
+          {
+            key: 'Link',
+            value: '</.well-known/api-catalog>; rel="api-catalog", ' +
+                   '</.well-known/agent-skills/index.json>; rel="agent-skills", ' +
+                   '</.well-known/mcp/server-card.json>; rel="mcp-server", ' +
+                   '</sitemap.xml>; rel="sitemap"'
+          },
+          // NEW: Accept-Patch for API discovery
+          {
+            key: 'Accept-Patch',
+            value: 'application/json'
+          },
+          // NEW: Robots tag (already handled but good to have)
+          {
+            key: 'X-Robots-Tag',
+            value: 'index, follow'
+          },
         ],
       },
       {
@@ -148,6 +167,73 @@ const nextConfig: NextConfig = {
             value: 'public, max-age=31536000, immutable',
           },
         ],
+      },
+      // NEW: Special headers for .well-known routes
+      {
+        source: '/.well-known/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400',
+          },
+          {
+            key: 'Content-Type',
+            value: 'application/json',
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*', // Allow agents from any origin to discover
+          },
+        ],
+      },
+      // NEW: Special headers for robots.txt
+      {
+        source: '/robots.txt',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/plain',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600',
+          },
+        ],
+      },
+    ];
+  },
+  
+  // NEW: Rewrites for .well-known and robots.txt
+  async rewrites() {
+    return [
+      {
+        source: '/robots.txt',
+        destination: '/api/robots',
+      },
+      {
+        source: '/.well-known/api-catalog',
+        destination: '/api/well-known/api-catalog',
+      },
+      {
+        source: '/.well-known/agent-skills/index.json',
+        destination: '/api/well-known/agent-skills/index',
+      },
+      {
+        source: '/.well-known/mcp/server-card.json',
+        destination: '/api/well-known/mcp/server-card',
+      },
+      {
+        source: '/.well-known/openid-configuration',
+        destination: '/api/well-known/openid-configuration',
+      },
+      {
+        source: '/.well-known/oauth-protected-resource',
+        destination: '/api/well-known/oauth-protected-resource',
+      },
+      // Catch-all for any other .well-known paths
+      {
+        source: '/.well-known/:path*',
+        destination: '/api/well-known/:path*',
       },
     ];
   },
