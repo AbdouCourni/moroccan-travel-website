@@ -1432,34 +1432,146 @@ export async function saveSubscriber(email: string) {
   }
 }
 
-// Add blog functions to firebase-server.ts
-export async function getBlogPosts(limitCount = 10) {
-  const q = query(
-    collection(db, 'blog_posts'),
-    where('status', '==', 'published'),
-    orderBy('publishedAt', 'desc'),
-    limit(limitCount)
-  );
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+// ==================== BLOG POST QUERIES ====================
+
+/**
+ * Get all published blog posts
+ * @param limitCount - Maximum number of posts to return
+ * @returns Array of blog posts
+ */
+export async function getBlogPosts(limitCount: number = 20): Promise<any[]> {
+  try {
+    const blogRef = collection(db, 'blog_posts');
+    const q = query(
+      blogRef,
+      where('status', '==', 'published'),
+      orderBy('publishedAt', 'desc'),
+      limit(limitCount)
+    );
+    const snapshot = await getDocs(q);
+    
+    // ✅ Convert Timestamps to plain objects
+    const posts = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return convertTimestamps({
+        id: doc.id,
+        ...data
+      });
+    });
+    
+    return posts;
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
 }
 
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-  const q = query(
-    collection(db, 'blog_posts'),
-    where('slug', '==', slug),
-    where('status', '==', 'published'),
-    limit(1)
-  );
+/**
+ * Get a single blog post by slug
+ * @param slug - The post slug
+ * @returns Blog post or null
+ */
+export async function getBlogPostBySlug(slug: string): Promise<any | null> {
+  try {
+    const blogRef = collection(db, 'blog_posts');
+    const q = query(blogRef, where('slug', '==', slug), limit(1));
+    const snapshot = await getDocs(q);
+    
+    if (snapshot.empty) return null;
+    
+    const doc = snapshot.docs[0];
+    const data = doc.data();
+    
+    // ✅ Convert Timestamps to plain objects
+    return convertTimestamps({
+      id: doc.id,
+      ...data
+    });
+  } catch (error) {
+    console.error('Error fetching blog post by slug:', error);
+    return null;
+  }
+}
 
-  const snapshot = await getDocs(q);
+/**
+ * Get blog posts by category
+ * @param category - Category to filter by
+ * @param limitCount - Maximum number of posts
+ */
+export async function getBlogPostsByCategory(category: string, limitCount: number = 10): Promise<any[]> {
+  try {
+    const blogRef = collection(db, 'blog_posts');
+    const q = query(
+      blogRef,
+      where('status', '==', 'published'),
+      where('category', '==', category),
+      orderBy('publishedAt', 'desc'),
+      limit(limitCount)
+    );
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error fetching blog posts by category:', error);
+    return [];
+  }
+}
 
-  if (snapshot.empty) return null;
+/**
+ * Get related blog posts
+ * @param currentSlug - Current post slug to exclude
+ * @param tags - Tags to match
+ * @param limitCount - Maximum number of posts
+ */
+export async function getRelatedBlogPosts(currentSlug: string, tags: string[] = [], limitCount: number = 3): Promise<BlogPost[]> {
+  try {
+    if (!tags.length) return [];
 
-  const data = snapshot.docs[0].data() as Omit<BlogPost, 'id'>;
+    const blogRef = collection(db, 'blog_posts');
+    const q = query(
+      blogRef,
+      where('status', '==', 'published'),
+      where('tags', 'array-contains-any', tags),
+      limit(limitCount + 1)
+    );
+    const snapshot = await getDocs(q);
 
-  return {
-    id: snapshot.docs[0].id,
-    ...data,
-  };
+    return snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() } as BlogPost))
+      .filter(post => post.slug !== currentSlug)
+      .slice(0, limitCount);
+  } catch (error) {
+    console.error('Error fetching related posts:', error);
+    return [];
+  }
+}
+
+function convertTimestamps(data: any): any {
+  if (data === null || data === undefined) {
+    return data;
+  }
+  
+  // Handle Firebase Timestamp
+  if (data && typeof data.toDate === 'function') {
+    return data.toDate().toISOString();
+  }
+  
+  // Handle arrays
+  if (Array.isArray(data)) {
+    return data.map(item => convertTimestamps(item));
+  }
+  
+  // Handle objects
+  if (typeof data === 'object') {
+    const converted: any = {};
+    for (const key in data) {
+      converted[key] = convertTimestamps(data[key]);
+    }
+    return converted;
+  }
+  
+  return data;
 }

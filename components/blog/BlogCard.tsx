@@ -1,43 +1,43 @@
 // components/blog/BlogCard.tsx
 'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, Clock } from 'lucide-react';
-import { BlogPost } from '../../types/blog';
-import { Language } from '../../types';
 
+export function BlogCard({ post, lang }: { post: any; lang: string }) {
+  // Get title based on language or fallback to English
+  const title = post.title?.[lang] || post.title?.en || post.title || 'Untitled';
+  const description = post.description?.[lang] || post.description?.en || post.description || '';
+  const image = post.image || '/images/blog-placeholder.jpg';
+  const slug = post.slug;
+  const readTime = post.readTime || 5;
+  const date = post.publishedAt?.toDate ? post.publishedAt.toDate() : new Date(post.publishedAt);
 
-
-
-export function BlogCard({ post, lang }: { post: BlogPost; lang: Language }) {
   return (
-    <Link href={`/${lang}/blog/${post.slug}`}>
-      <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+    <Link href={`/${lang}/blog/${slug}`}>
+      <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer">
         <div className="relative h-48 overflow-hidden">
-          <Image
-            src={post.image}
-            alt={post.imageAlt || post.title[lang]}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          <img 
+            src={image} 
+            alt={title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
         <div className="p-5">
-          <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
-            <span className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
-              {new Date(post.publishedAt).toLocaleDateString()}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {post.readingTime} min read
-            </span>
+          <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+            <span>{date.toLocaleDateString()}</span>
+            <span>•</span>
+            <span>{readTime} min read</span>
           </div>
-          <h2 className="font-amiri text-xl font-bold text-dark-charcoal mb-2 group-hover:text-primary-gold transition-colors">
-            {post.title[lang]}
+          <h2 className="font-bold text-xl text-gray-900 mb-2 group-hover:text-amber-600 transition-colors line-clamp-2">
+            {title}
           </h2>
           <p className="text-gray-600 text-sm line-clamp-2">
-            {post.description[lang]}
+            {description}
           </p>
+          <div className="mt-4 text-amber-600 font-semibold text-sm group-hover:underline">
+            Read More →
+          </div>
         </div>
       </div>
     </Link>

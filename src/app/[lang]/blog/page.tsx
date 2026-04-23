@@ -3,10 +3,22 @@ import { getBlogPosts } from '../../../../lib/firebase-server';
 import { BlogCard } from '../../../../components/blog/BlogCard';
 import { Language } from '../../../../types';
 
-
 export default async function BlogPage({ params }: { params: { lang: Language } }) {
   const posts = await getBlogPosts(20);
   const lang = params.lang || 'en';
+
+  // Debug: Log what we got
+  console.log('Blog posts fetched:', posts.length);
+  console.log('First post:', posts[0]?.title);
+
+  if (!posts.length) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
+        <h1 className="text-4xl font-bold mb-4">Morocco Travel Blog</h1>
+        <p className="text-gray-600">No blog posts found yet. Check back soon!</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
