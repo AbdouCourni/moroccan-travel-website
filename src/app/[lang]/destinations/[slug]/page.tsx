@@ -1,7 +1,7 @@
 // app/[lang]/destinations/[slug]/page.tsx
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces } from '../../../../../lib/firebase-server';
+import { getDestinationBySlug, getPlacesByDestination, getPopularPlaces,getActivitiesByDestination } from '../../../../../lib/firebase-server';
 import { DestinationGallery } from '../../../../../components/DestinationGallery';
 import { ImageSlider } from '../../../../../components/ImageSlider';
 import { PlacesGrid } from '../../../../../components/PlacesGrid';
@@ -207,6 +207,9 @@ export default async function DestinationPage({
 
     const t = (key: keyof typeof translations.en) => translations[currentLanguage]?.[key] || translations.en[key];
 
+    // Fetch activities for this destination
+    const activities = await getActivitiesByDestination(destination.id);
+
     return (
       <div className="min-h-screen bg-white">
         {/* Add Structured Data for SEO */}
@@ -361,26 +364,45 @@ export default async function DestinationPage({
 <TransportationSection destinationName={displayName} />
 
 
-        {/* Activities Section */}
-        {destination.activities && destination.activities.length > 0 && (
-          <section id="activities" className="py-16 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-12">
-                <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
-                  {t('thingsToDo')} {displayName}
-                </h2>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                  {t('experienceBestActivities')}
-                </p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {destination.activities.map((activity, index) => (
-                  <ActivityCard key={index} activity={activity} index={index} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+       {/* Activities Section - Dynamic from Firebase */}
+<section id="activities" className="py-16 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-12">
+      <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
+        {t('thingsToDo')} {displayName}
+      </h2>
+      <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        {t('experienceBestActivities')}
+      </p>
+    </div>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {activities.map((activity) => (
+        <ActivityCard 
+          key={activity.id} 
+          activity={activity} 
+          lang={lang}
+          destinationSlug={destination.slug}
+        />
+      ))}
+    </div>
+    
+    {/* View All Activities Button */}
+    {activities.length > 3 && (
+      <div className="text-center mt-12">
+        <Link 
+          href={`/${lang}/destinations/${destination.slug}/activities`}
+          className="inline-flex items-center gap-2 bg-primary-gold text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300"
+        >
+          View All Activities ({activities.length})
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      </div>
+    )}
+  </div>
+</section>
 
         {/* Gallery Section */}
         {destination.images && destination.images.length > 1 && (

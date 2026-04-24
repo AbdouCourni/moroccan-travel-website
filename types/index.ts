@@ -135,6 +135,15 @@ export interface Destination {
   updatedAt: any;
   ranking : number;
   showOnMap: boolean;
+  activitiesList?: ActivitySummary[];
+}
+interface ActivitySummary {
+  id: string;
+  title: string;
+  category: string;
+  duration: string;
+  image: string;
+  isHighlight?: boolean;
 }
 
 // types/index.ts
@@ -350,30 +359,37 @@ export interface Transportation {
   };
 }
 
+
 export interface Activity {
   id: string;
-  name: {
-    en: string;
-    fr: string;
-    ar: string;
-    es: string;
+  slug: string;
+  title: MultiLanguageText;
+  description: MultiLanguageText;
+  shortDescription: MultiLanguageText;
+  category: 'nature' | 'cultural' | 'food' | 'adventure' | 'workshop';
+  destinationId: string; // Reference to Nador destination
+  destinationSlug: string;
+  location: {
+    name: string;
+    coordinates?: { lat: number; lng: number };
+    address?: string;
   };
-  description: {
-    en: string;
-    fr: string;
-    ar: string;
-    es: string;
+  duration: string; // e.g., "2-3 hours", "Full day"
+  price?: {
+    amount: number;
+    currency: string;
+    description?: string;
   };
-  type: 'tour' | 'cooking_class' | 'desert_tour' | 'historical' | 'adventure' | 'cultural';
-  duration: string;
-  price: number;
-  includes: string[];
-  requirements: string[];
+  bestTimeToVisit: string[];
+  tips: string[];
   images: string[];
-  location: string;
-  difficulty: 'easy' | 'moderate' | 'difficult';
+  featured: boolean;
   rating?: number;
   reviewCount?: number;
+  bookingUrl?: string; // External booking link if applicable
+  includedInItinerary?: boolean; // For trip planner integration
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Hook-specific interfaces

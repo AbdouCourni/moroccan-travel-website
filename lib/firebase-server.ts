@@ -1598,3 +1598,54 @@ function convertTimestamps(data: any): any {
   
   return data;
 }
+//==================== Activities==============
+export async function getActivitiesByDestination(
+  destinationSlug: string,
+  limitCount?: number
+): Promise<any[]> {
+  try {
+    const activitiesRef = collection(db, 'activities');
+    let q = query(activitiesRef, where('destinationSlug', '==', destinationSlug));
+    
+    if (limitCount) {
+      q = query(q, limit(limitCount));
+    }
+    
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return convertTimestamps({
+        id: doc.id,
+        ...data
+      });
+    });
+  } catch (error) {
+    console.error('Error fetching activities:', error);
+    return [];
+  }
+}
+
+/**
+ * Get a single activity by slug
+ * @param slug - The activity slug
+ */
+export async function getActivityBySlug(slug: string): Promise<any | null> {
+  try {
+    const activitiesRef = collection(db, 'activities');
+    const q = query(activitiesRef, where('slug', '==', slug), limit(1));
+    const snapshot = await getDocs(q);
+    
+    if (snapshot.empty) return null;
+    
+    const doc = snapshot.docs[0];
+    const data = doc.data();
+    return convertTimestamps({
+      id: doc.id,
+      ...data
+    });
+  } catch (error) {
+    console.error('Error fetching activity:', error);
+    return null;
+  }
+}
