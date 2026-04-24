@@ -101,13 +101,13 @@ export function MapWithPlaces({ places, className = "h-96",destinationSlug }: Ma
         },
         map: map,
         title: place.name.en,
-        icon: {
-          url: 'data:image/svg+xml;base64,' + btoa(`
-            <svg width="24" height="34" viewBox="0 0 24 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 0C5.373 0 0 5.373 0 12C0 21.5 12 34 12 34C12 34 24 21.5 24 12C24 5.373 18.627 0 12 0Z" fill="#D4AF37"/>
-              <circle cx="12" cy="12" r="4" fill="white"/>
-            </svg>
-          `),
+       icon: {
+  url: 'data:image/svg+xml;base64,' + btoa(`
+    <svg width="24" height="34" viewBox="0 0 24 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.373 0 0 5.373 0 12C0 21.5 12 34 12 34C12 34 24 21.5 24 12C24 5.373 18.627 0 12 0Z" fill="#EF4444"/>
+      <circle cx="12" cy="12" r="4" fill="white"/>
+    </svg>
+  `),
           scaledSize: new window.google.maps.Size(24, 34),
           anchor: new window.google.maps.Point(12, 34),
         }

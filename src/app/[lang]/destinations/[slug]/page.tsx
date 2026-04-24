@@ -14,7 +14,9 @@ import { convertFirebaseData, convertDestinationData } from '../../../../../lib/
 import { Metadata } from 'next';
 import { DestinationStructuredData } from '../../../../../components/seo/StructuredData';
 import { Place } from '../../../../../types';
-import dynamic from 'next/dynamic';
+import { TransportationSection } from '../../../../../components/TransportationSection';
+
+
 
 
 
@@ -115,69 +117,9 @@ const translations = {
   }
 };
 
-// Mock data
-const mockAccommodations = [
-  {
-    id: '1',
-    name: 'Luxury Riad in Medina',
-    type: 'riad',
-    price: 120,
-    rating: 4.8,
-    reviewCount: 156,
-    image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400',
-    amenities: ['Pool', 'Breakfast', 'WiFi', 'Spa'],
-    location: 'Medina Center'
-  },
-  {
-    id: '2',
-    name: 'Desert Camp Experience',
-    type: 'desert_camp',
-    price: 80,
-    rating: 4.9,
-    reviewCount: 203,
-    image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400',
-    amenities: ['Camel Ride', 'Dinner', 'Bonfire', 'Stargazing'],
-    location: 'Sahara Desert'
-  },
-  {
-    id: '3',
-    name: 'Modern City Apartment',
-    type: 'apartment',
-    price: 65,
-    rating: 4.6,
-    reviewCount: 89,
-    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400',
-    amenities: ['Kitchen', 'WiFi', 'Parking', 'Balcony'],
-    location: 'City Center'
-  }
-];
 
-const mockTransportation = [
-  {
-    type: 'train',
-    name: 'ONCF Train',
-    description: 'Comfortable rail service connecting major cities',
-    price: 'From $15',
-    duration: '3 hours from Casablanca',
-    image: 'https://i.imgur.com/0ZiwMT4.png'
-  },
-  {
-    type: 'bus',
-    name: 'CTM Bus',
-    description: 'Reliable bus service throughout Morocco',
-    price: 'From $10',
-    duration: '4 hours from Casablanca',
-    image: 'https://i.imgur.com/1GNiZJ0.png'
-  },
-  {
-    type: 'car_rental',
-    name: 'Car Rental',
-    description: 'Freedom to explore at your own pace',
-    price: 'From $25/day',
-    duration: 'Flexible',
-    image: 'https://i.imgur.com/v0t9HvX.png'
-  }
-];
+
+const mockTransportation = []
 
 // Generate metadata for SEO
 export async function generateMetadata({
@@ -416,50 +358,8 @@ export default async function DestinationPage({
         )}
 
         {/* Accommodation Section */}
-        <AccommodationSection
-          destinationName={displayName}
-          language={currentLanguage}
-        />
+<TransportationSection destinationName={displayName} />
 
-        {/* Transportation Section */}
-        <section id="transport" className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="font-amiri text-4xl font-bold text-dark-charcoal mb-4">
-                {t('gettingTo')} {displayName}
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {t('chooseBestWay')}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {mockTransportation.map((transport, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300">
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src={transport.image}
-                      alt={transport.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-3">
-                      {transport.type === 'train' && <Bus className="w-6 h-6 text-moroccan-blue" />}
-                      {transport.type === 'bus' && <Bus className="w-6 h-6 text-primary-gold" />}
-                      {transport.type === 'car_rental' && <Car className="w-6 h-6 text-green-600" />}
-                      <h3 className="font-amiri text-xl font-bold text-dark-charcoal">{transport.name}</h3>
-                    </div>
-                    <p className="text-gray-600 mb-4">{transport.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-primary-gold">{transport.price}</span>
-                      <span className="text-sm text-gray-500">{transport.duration}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Activities Section */}
         {destination.activities && destination.activities.length > 0 && (

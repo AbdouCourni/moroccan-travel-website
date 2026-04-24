@@ -384,6 +384,29 @@ export async function getPlacesCount(destinationId: string): Promise<number> {
     return 0;
   }
 }
+export async function getPlacesByCategory(
+  destinationId: string,
+  category: string,
+  limitCount: number = 6
+): Promise<Place[]> {
+  try {
+    const placesRef = collection(db, 'destinations', destinationId, 'places');
+    const q = query(
+      placesRef,
+      where('category', '==', category),
+      limit(limitCount)
+    );
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Place));
+  } catch (error) {
+    console.error(`Error fetching ${category} places:`, error);
+    return [];
+  }
+}
 
 // ==================== REVIEW QUERIES ====================
 

@@ -187,7 +187,7 @@ export default function Footer() {
               </a>
               <div className="flex items-start gap-3 text-gray-300 text-sm">
                 <MapPin className="w-4 h-4 text-primary-gold mt-0.5 flex-shrink-0" />
-                <span>Marrakech, Morocco</span>
+                <span>Nador, Morocco</span>
               </div>
               
               {/* Social Links */}

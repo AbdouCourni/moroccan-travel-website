@@ -10,6 +10,7 @@ export default async function BlogPage({ params }: { params: { lang: Language } 
   // Debug: Log what we got
   console.log('Blog posts fetched:', posts.length);
   console.log('First post:', posts[0]?.title);
+   console.log('First post:', posts[0]);
 
   if (!posts.length) {
     return (

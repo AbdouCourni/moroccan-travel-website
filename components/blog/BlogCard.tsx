@@ -8,7 +8,7 @@ export function BlogCard({ post, lang }: { post: any; lang: string }) {
   // Get title based on language or fallback to English
   const title = post.title?.[lang] || post.title?.en || post.title || 'Untitled';
   const description = post.description?.[lang] || post.description?.en || post.description || '';
-  const image = post.image || '/images/blog-placeholder.jpg';
+  const image = post.blocks[0].image || '/hero-discover-morocco.jpg';
   const slug = post.slug;
   const readTime = post.readTime || 5;
   const date = post.publishedAt?.toDate ? post.publishedAt.toDate() : new Date(post.publishedAt);
