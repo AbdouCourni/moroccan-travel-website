@@ -1,4 +1,4 @@
-// src/app/api/robots/route.ts
+// public/robots/route.ts
 import { NextResponse } from 'next/server'
 
 export async function GET() {
@@ -30,10 +30,6 @@ Disallow: /
 User-agent: CCBot
 Disallow: /
 
-# Content Signals - Declare AI usage preferences
-Content-Signal: ai-train=no
-Content-Signal: search=yes
-Content-Signal: ai-input=no
 
 # Crawl delay
 Crawl-delay: 1
